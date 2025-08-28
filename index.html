@@ -1119,11 +1119,10 @@
                 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
                 // =======================================================================
-                // ▼▼▼ TEMPATKAN KONFIGURASI FIREBASE ANDA DI SINI ▼▼▼
+                // ▼▼▼ KONFIGURASI FIREBASE ▼▼▼
                 // =======================================================================
-                // Anda bisa mendapatkan konfigurasi ini dari Firebase Console proyek Anda.
-                // Buka Project Settings > General > Your apps > Web app > Firebase SDK snippet > Config
-                /*
+                // Jika aplikasi ini dijalankan di luar lingkungan yang menyediakan __firebase_config,
+                // Anda HARUS mengganti nilai-nilai placeholder di bawah ini dengan kredensial proyek Firebase Anda.
                 const firebaseConfigPlaceholder = {
                     apiKey: "AIzaSyCRNTafMklQKHd4M25nAcs-ZLTK0UxvuGE",
                     authDomain: "myreport-9e7e6.firebaseapp.com",
@@ -1132,16 +1131,13 @@
                     messagingSenderId: "1006939537070",
                     appId: "1:1006939537070:web:d1863128a9507491b0b73f"
                 };
-                */
                 
-                // Kode di bawah ini secara otomatis menggunakan konfigurasi yang disediakan oleh lingkungan ini.
-                // Jika Anda menjalankan file ini di tempat lain, ganti dengan konfigurasi Anda.
                 const firebaseConfig = typeof __firebase_config !== 'undefined' 
                     ? JSON.parse(__firebase_config) 
-                    : {}; // Ganti {} dengan firebaseConfigPlaceholder jika perlu
+                    : firebaseConfigPlaceholder;
 
-                if (!firebaseConfig.apiKey) {
-                    throw new Error("Konfigurasi Firebase tidak ditemukan atau tidak valid.");
+                if (!firebaseConfig.apiKey || firebaseConfig.apiKey.startsWith("GANTI_DENGAN")) {
+                    throw new Error("Konfigurasi Firebase tidak valid. Silakan ganti nilai placeholder di dalam kode dengan kredensial proyek Firebase Anda.");
                 }
                 // =======================================================================
                 // ▲▲▲ AKHIR DARI BAGIAN KONFIGURASI FIREBASE ▲▲▲
