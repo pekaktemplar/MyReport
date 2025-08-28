@@ -42,6 +42,18 @@
             <div class="text-xl font-semibold text-gray-700">Memuat Aplikasi...</div>
         </div>
 
+        <!-- Login Screen -->
+        <div id="login-screen" class="hidden-dialog items-center justify-center min-h-screen">
+            <div class="bg-white p-8 rounded-xl shadow-lg text-center max-w-sm w-full">
+                <h1 class="text-3xl font-bold text-indigo-800 mb-2">MyReport</h1>
+                <p class="text-gray-600 mb-6">Silakan login untuk melanjutkan</p>
+                <button id="google-signin-btn" class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 flex items-center justify-center gap-3">
+                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.19 4.223-4.243 5.571l6.252 5.218C41.91 35.778 44 30.551 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
+                    Sign in with Google
+                </button>
+            </div>
+        </div>
+
         <!-- Error State -->
         <div id="error-display" class="hidden-dialog items-center justify-center min-h-screen bg-red-100 text-red-700 p-4 rounded-md">
             <p id="error-message" class="text-xl font-semibold"></p>
@@ -52,8 +64,13 @@
             <!-- Header -->
             <header class="bg-white shadow-lg rounded-xl p-4 mb-8 flex flex-col sm:flex-row items-center justify-between">
                 <h1 class="text-3xl font-bold text-indigo-800 mb-2 sm:mb-0">MyReport</h1>
-                <div class="text-sm text-gray-600">
-                    <span class="font-semibold">ID Pengguna:</span> <span id="user-id-display">N/A</span>
+                <div id="user-info" class="hidden-dialog items-center gap-3">
+                    <img id="user-photo" class="w-10 h-10 rounded-full" src="" alt="User Photo">
+                    <div class="text-sm">
+                        <span id="user-name" class="font-semibold text-gray-800"></span>
+                        <span id="user-email" class="text-gray-500"></span>
+                    </div>
+                    <button id="signout-btn" class="ml-4 bg-red-500 text-white py-2 px-3 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-200 text-sm">Sign Out</button>
                 </div>
                 <button id="export-excel-btn" class="mt-4 sm:mt-0 bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-200 flex items-center justify-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
@@ -161,13 +178,14 @@
     <script type="module">
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- GLOBAL STATE AND CONSTANTS ---
         let db, auth;
         let userId = null;
         let activeTab = 'komplain';
+        let firestoreUnsubscribes = []; // To hold our listener cleanup functions
 
         // Data stores
         let allComplaints = [];
@@ -192,10 +210,16 @@
 
         // --- DOM ELEMENT REFERENCES ---
         const loadingIndicator = document.getElementById('loading-indicator');
+        const loginScreen = document.getElementById('login-screen');
+        const googleSignInBtn = document.getElementById('google-signin-btn');
         const errorDisplay = document.getElementById('error-display');
         const errorMessage = document.getElementById('error-message');
         const mainContent = document.getElementById('main-content');
-        const userIdDisplay = document.getElementById('user-id-display');
+        const userInfo = document.getElementById('user-info');
+        const userName = document.getElementById('user-name');
+        const userEmail = document.getElementById('user-email');
+        const userPhoto = document.getElementById('user-photo');
+        const signOutBtn = document.getElementById('signout-btn');
         
         // Dialogs
         const messageDialog = document.getElementById('message-dialog');
@@ -1113,6 +1137,25 @@
             link.click();
         };
 
+        // --- AUTHENTICATION FUNCTIONS ---
+        const handleGoogleSignIn = () => {
+            const provider = new GoogleAuthProvider();
+            signInWithPopup(auth, provider)
+                .catch((error) => {
+                    console.error("Google Sign-In Error:", error);
+                    errorMessage.textContent = `Gagal login dengan Google: ${error.message}`;
+                    errorDisplay.classList.remove('hidden-dialog');
+                    errorDisplay.classList.add('flex');
+                });
+        };
+
+        const handleSignOut = () => {
+            signOut(auth).catch((error) => {
+                console.error("Sign-Out Error:", error);
+                showMessage("Gagal melakukan sign out.");
+            });
+        };
+
         // --- INITIALIZATION ---
         const init = () => {
             try {
@@ -1121,15 +1164,13 @@
                 // =======================================================================
                 // ▼▼▼ KONFIGURASI FIREBASE ▼▼▼
                 // =======================================================================
-                // Jika aplikasi ini dijalankan di luar lingkungan yang menyediakan __firebase_config,
-                // Anda HARUS mengganti nilai-nilai placeholder di bawah ini dengan kredensial proyek Firebase Anda.
                 const firebaseConfigPlaceholder = {
-                    apiKey: "AIzaSyCRNTafMklQKHd4M25nAcs-ZLTK0UxvuGE",
-                    authDomain: "myreport-9e7e6.firebaseapp.com",
-                    projectId: "myreport-9e7e6",
-                    storageBucket: "myreport-9e7e6.firebasestorage.app",
-                    messagingSenderId: "1006939537070",
-                    appId: "1:1006939537070:web:d1863128a9507491b0b73f"
+                    apiKey: "GANTI_DENGAN_API_KEY_ANDA",
+                    authDomain: "GANTI_DENGAN_AUTH_DOMAIN_ANDA.firebaseapp.com",
+                    projectId: "GANTI_DENGAN_PROJECT_ID_ANDA",
+                    storageBucket: "GANTI_DENGAN_STORAGE_BUCKET_ANDA.appspot.com",
+                    messagingSenderId: "GANTI_DENGAN_MESSAGING_SENDER_ID_ANDA",
+                    appId: "GANTI_DENGAN_APP_ID_ANDA"
                 };
                 
                 const firebaseConfig = typeof __firebase_config !== 'undefined' 
@@ -1137,7 +1178,7 @@
                     : firebaseConfigPlaceholder;
 
                 if (!firebaseConfig.apiKey || firebaseConfig.apiKey.startsWith("GANTI_DENGAN")) {
-                    throw new Error("Konfigurasi Firebase tidak valid. Silakan ganti nilai placeholder di dalam kode dengan kredensial proyek Firebase Anda.");
+                    throw new Error("Konfigurasi Firebase tidak valid. Ganti nilai placeholder di dalam kode dengan kredensial proyek Firebase Anda.");
                 }
                 // =======================================================================
                 // ▲▲▲ AKHIR DARI BAGIAN KONFIGURASI FIREBASE ▲▲▲
@@ -1147,21 +1188,41 @@
                 db = getFirestore(app);
                 auth = getAuth(app);
 
-                onAuthStateChanged(auth, async (user) => {
+                onAuthStateChanged(auth, (user) => {
+                    loadingIndicator.style.display = 'none';
                     if (user) {
+                        // User is signed in
                         userId = user.uid;
-                        userIdDisplay.textContent = userId;
-                        loadingIndicator.style.display = 'none';
+                        userName.textContent = user.displayName;
+                        userEmail.textContent = user.email;
+                        userPhoto.src = user.photoURL;
+
+                        loginScreen.classList.add('hidden-dialog');
+                        loginScreen.classList.remove('flex');
                         mainContent.classList.remove('hidden');
+                        userInfo.classList.remove('hidden-dialog');
+                        userInfo.classList.add('flex');
                         
-                        // Setup listeners and initial render
                         setupFirestoreListeners(appId);
                         renderForms();
                         addDisplayEventListeners();
                     } else {
-                        const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                        if (token) await signInWithCustomToken(auth, token);
-                        else await signInAnonymously(auth);
+                        // User is signed out
+                        userId = null;
+                        mainContent.classList.add('hidden');
+                        userInfo.classList.add('hidden-dialog');
+                        userInfo.classList.remove('flex');
+                        loginScreen.classList.remove('hidden-dialog');
+                        loginScreen.classList.add('flex');
+
+                        // Clean up old data and listeners
+                        firestoreUnsubscribes.forEach(unsub => unsub());
+                        firestoreUnsubscribes = [];
+                        allComplaints = [];
+                        allSlaRecords = [];
+                        allIssues = [];
+                        allInfoTambahan = [];
+                        renderAllTabs(); // Re-render tabs to show they are empty
                     }
                 });
 
@@ -1192,7 +1253,7 @@
                 }
             });
 
-            // Dialog close buttons
+            // Dialog and Auth button listeners
             messageDialogOkBtn.addEventListener('click', hideMessage);
             confirmationDialogCancelBtn.addEventListener('click', hideConfirmation);
             statusUpdateCancelBtn.addEventListener('click', () => {
@@ -1200,8 +1261,10 @@
                 statusUpdateDialog.classList.remove('flex');
             });
             document.getElementById('export-excel-btn').addEventListener('click', handleExportAllToExcel);
+            googleSignInBtn.addEventListener('click', handleGoogleSignIn);
+            signOutBtn.addEventListener('click', handleSignOut);
 
-            // Explicitly hide all dialogs on startup to prevent browser state restoration issues
+            // Explicitly hide all dialogs on startup
             messageDialog.classList.add('hidden-dialog');
             messageDialog.classList.remove('flex');
             confirmationDialog.classList.add('hidden-dialog');
@@ -1211,6 +1274,10 @@
         };
         
         const setupFirestoreListeners = (appId) => {
+            // Clean up previous listeners before attaching new ones
+            firestoreUnsubscribes.forEach(unsub => unsub());
+            firestoreUnsubscribes = [];
+
             const collections = ['complaints', 'slaRecords', 'issues', 'infoTambahan'];
             const stateUpdaters = {
                 complaints: (data) => { allComplaints = data; renderComplaintsTab(); },
@@ -1221,13 +1288,14 @@
             
             collections.forEach(name => {
                 const q = query(collection(db, `artifacts/${appId}/users/${userId}/${name}`));
-                onSnapshot(q, (snapshot) => {
+                const unsubscribe = onSnapshot(q, (snapshot) => {
                     const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     stateUpdaters[name](data);
                 }, (error) => {
                     console.error(`Error fetching ${name}:`, error);
                     showMessage(`Gagal memuat data ${name}.`);
                 });
+                firestoreUnsubscribes.push(unsubscribe); // Store the cleanup function
             });
         };
 
