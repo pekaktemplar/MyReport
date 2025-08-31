@@ -56,7 +56,7 @@
 
         <!-- Error State -->
         <div id="error-display" class="hidden-dialog items-center justify-center min-h-screen bg-red-100 text-red-700 p-4 rounded-md">
-            <p id="error-message" class="text-xl font-semibold"></p>
+            <p id="error-message" class="text-xl font-semibold text-center"></p>
         </div>
 
         <!-- Main Application Content (hidden until loaded) -->
@@ -1161,6 +1161,19 @@
             try {
                 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
+                // ▼▼▼ DAFTAR EMAIL YANG DIIZINKAN (GANTI DENGAN EMAIL ANDA) ▼▼▼
+                // Hapus email placeholder di bawah dan ganti dengan alamat email Google
+                // yang Anda izinkan untuk mengakses aplikasi ini.
+                const authorizedEmails = [
+                    "muhherman226@gmail.com",
+                    "afm.firmansyahagung@gmail.com",
+                    "ekonovidianto7@gmail.com",
+                    "fati.imahss@gmail.com",
+                    "kadeklestary@gmail.com",
+                    "pekaktemplar@gmail.com"
+                ];
+                // ▲▲▲ AKHIR DARI DAFTAR EMAIL ▲▲▲
+
                 // =======================================================================
                 // ▼▼▼ KONFIGURASI FIREBASE ▼▼▼
                 // =======================================================================
@@ -1191,21 +1204,34 @@
                 onAuthStateChanged(auth, (user) => {
                     loadingIndicator.style.display = 'none';
                     if (user) {
-                        // User is signed in
-                        userId = user.uid;
-                        userName.textContent = user.displayName;
-                        userEmail.textContent = user.email;
-                        userPhoto.src = user.photoURL;
+                        // User is signed in, check if they are authorized
+                        if (authorizedEmails.includes(user.email)) {
+                            // USER IS AUTHORIZED
+                            userId = user.uid;
+                            userName.textContent = user.displayName;
+                            userEmail.textContent = user.email;
+                            userPhoto.src = user.photoURL;
 
-                        loginScreen.classList.add('hidden-dialog');
-                        loginScreen.classList.remove('flex');
-                        mainContent.classList.remove('hidden');
-                        userInfo.classList.remove('hidden-dialog');
-                        userInfo.classList.add('flex');
-                        
-                        setupFirestoreListeners(appId);
-                        renderForms();
-                        addDisplayEventListeners();
+                            loginScreen.classList.add('hidden-dialog');
+                            loginScreen.classList.remove('flex');
+                            mainContent.classList.remove('hidden');
+                            userInfo.classList.remove('hidden-dialog');
+                            userInfo.classList.add('flex');
+                            
+                            setupFirestoreListeners(appId);
+                            renderForms();
+                            addDisplayEventListeners();
+                        } else {
+                            // USER IS NOT AUTHORIZED
+                            errorMessage.textContent = `Akses Ditolak. Akun Anda (${user.email}) tidak memiliki izin untuk mengakses aplikasi ini.`;
+                            errorDisplay.classList.remove('hidden-dialog');
+                            errorDisplay.classList.add('flex');
+                            mainContent.classList.add('hidden');
+                            loginScreen.classList.add('hidden-dialog');
+                            loginScreen.classList.remove('flex');
+                            // Automatically sign them out
+                            handleSignOut();
+                        }
                     } else {
                         // User is signed out
                         userId = null;
@@ -1214,6 +1240,8 @@
                         userInfo.classList.remove('flex');
                         loginScreen.classList.remove('hidden-dialog');
                         loginScreen.classList.add('flex');
+                        errorDisplay.classList.add('hidden-dialog'); // Hide error on sign out
+                        errorDisplay.classList.remove('flex');
 
                         // Clean up old data and listeners
                         firestoreUnsubscribes.forEach(unsub => unsub());
@@ -1305,3 +1333,4 @@
     </script>
 </body>
 </html>
+
