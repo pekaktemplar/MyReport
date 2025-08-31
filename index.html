@@ -182,6 +182,7 @@
         import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- GLOBAL STATE AND CONSTANTS ---
+        const APP_ID = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         let db, auth;
         let userId = null;
         let activeTab = 'komplain';
@@ -926,7 +927,6 @@
 
         // --- DATA HANDLING (CRUD) ---
         const addComplaint = async () => {
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
             const form = document.getElementById('form-komplain');
             const newComplaint = {
                 branch: form.querySelector('[name="branch"]').value,
@@ -944,7 +944,7 @@
                 return showMessage("Harap lengkapi Cabang, Judul, dan Deskripsi.");
             }
             try {
-                await addDoc(collection(db, `artifacts/${appId}/users/${userId}/complaints`), newComplaint);
+                await addDoc(collection(db, `artifacts/${APP_ID}/users/${userId}/complaints`), newComplaint);
                 showMessage("Komplain berhasil ditambahkan!");
                 renderForms(); // Reset form
             } catch (e) {
@@ -954,7 +954,6 @@
         };
         
         const addSlaRecord = async () => {
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
             const form = document.getElementById('form-sla');
             const newSla = {
                 branch: form.querySelector('[name="branch"]').value,
@@ -982,7 +981,7 @@
             if (!newSla.branch) return showMessage("Harap pilih Cabang.");
             
             try {
-                await addDoc(collection(db, `artifacts/${appId}/users/${userId}/slaRecords`), newSla);
+                await addDoc(collection(db, `artifacts/${APP_ID}/users/${userId}/slaRecords`), newSla);
                 showMessage("Catatan SLA berhasil ditambahkan!");
                 renderForms(); // Reset form
             } catch (e) {
@@ -992,7 +991,6 @@
         };
 
         const addIssue = async () => {
-             const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
             const form = document.getElementById('form-isu');
             const newIssue = {
                 branch: form.querySelector('[name="branch"]').value,
@@ -1009,7 +1007,7 @@
                 return showMessage("Harap lengkapi semua bidang Isu.");
             }
             try {
-                await addDoc(collection(db, `artifacts/${appId}/users/${userId}/issues`), newIssue);
+                await addDoc(collection(db, `artifacts/${APP_ID}/users/${userId}/issues`), newIssue);
                 showMessage("Isu berhasil ditambahkan!");
                 renderForms(); // Reset form
             } catch (e) {
@@ -1019,7 +1017,6 @@
         };
 
         const addInfoTambahan = async () => {
-             const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
             const form = document.getElementById('form-infoTambahan');
             const newInfo = {
                 branch: form.querySelector('[name="branch"]').value,
@@ -1033,7 +1030,7 @@
                 return showMessage("Harap lengkapi Cabang dan Info.");
             }
             try {
-                await addDoc(collection(db, `artifacts/${appId}/users/${userId}/infoTambahan`), newInfo);
+                await addDoc(collection(db, `artifacts/${APP_ID}/users/${userId}/infoTambahan`), newInfo);
                 showMessage("Info berhasil ditambahkan!");
                 renderForms(); // Reset form
             } catch (e) {
@@ -1043,9 +1040,8 @@
         };
         
         const deleteItem = async (collectionName, id) => {
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
             try {
-                await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/${collectionName}`, id));
+                await deleteDoc(doc(db, `artifacts/${APP_ID}/users/${userId}/${collectionName}`, id));
                 showMessage("Item berhasil dihapus.");
             } catch (e) {
                 showMessage("Gagal menghapus item.");
@@ -1074,7 +1070,6 @@
         };
 
         const handleStatusUpdate = async (id, type, subService) => {
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
             const newStatus = statusUpdateSelect.value;
             const completionDate = newStatus === 'Selesai' ? statusUpdateCompletionDate.value : null;
             let fieldsToUpdate = { status: newStatus, completionDate };
@@ -1092,7 +1087,7 @@
                     fieldsToUpdate = { [subService]: updatedSubService };
                 }
                 
-                const itemRef = doc(db, `artifacts/${appId}/users/${userId}/${collectionName}`, id);
+                const itemRef = doc(db, `artifacts/${APP_ID}/users/${userId}/${collectionName}`, id);
                 await updateDoc(itemRef, fieldsToUpdate);
                 showMessage("Status berhasil diperbarui.");
             } catch (e) {
@@ -1110,14 +1105,39 @@
             const filteredSla = slaPeriodFilter === 'Semua Periode' ? allSlaRecords : allSlaRecords.filter(s => s.reportingPeriod === slaPeriodFilter);
             const filteredIssues = issuePeriodFilter === 'Semua Periode' ? allIssues : allIssues.filter(i => i.reportingPeriod === issuePeriodFilter);
             const filteredInfo = infoTambahanPeriodFilter === 'Semua Periode' ? allInfoTambahan : allInfoTambahan.filter(i => i.reportingPeriod === infoTambahanPeriodFilter);
-
-            let tableHtml = `<html><head><meta charset="utf-8"/><style>table,th,td{border:1px solid black;border-collapse:collapse;}th,td{padding:5px;}h2{font-weight:bold;}</style></head><body>`;
+            
+            let tableHtml = `
+                <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+                <head>
+                    <meta charset="utf-8" />
+                    <!--[if gte mso 9]>
+                    <xml>
+                        <x:ExcelWorkbook>
+                            <x:ExcelWorksheets>
+                                <x:ExcelWorksheet>
+                                    <x:Name>Laporan</x:Name>
+                                    <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>
+                                </x:ExcelWorksheet>
+                            </x:ExcelWorksheets>
+                        </x:ExcelWorkbook>
+                    </xml>
+                    <![endif]-->
+                    <style>
+                        table, th, td { border: 1px solid black; border-collapse: collapse; }
+                        th, td { padding: 5px; text-align: left; vertical-align: top; }
+                        th { background-color: #f2f2f2; }
+                        h2 { font-size: 16px; font-weight: bold; }
+                        .pre-wrap { white-space: pre-wrap; }
+                    </style>
+                </head>
+                <body>
+            `;
             
             // Complaints
             if (filteredComplaints.length > 0) {
                 tableHtml += `<h2>Laporan Komplain - Periode: ${complaintPeriodFilter}</h2><table><thead><tr><th>Cabang</th><th>Judul</th><th>Deskripsi</th><th>Penanganan</th><th>Status</th><th>Tgl Selesai</th><th>Periode</th></tr></thead><tbody>`;
                 filteredComplaints.forEach(c => {
-                    tableHtml += `<tr><td>${c.branch}</td><td>${c.title}</td><td>${c.description}</td><td>${c.handling}</td><td>${c.status}</td><td>${c.completionDate || ''}</td><td>${c.reportingPeriod}</td></tr>`;
+                    tableHtml += `<tr><td>${c.branch || ''}</td><td>${c.title || ''}</td><td>${c.description || ''}</td><td>${c.handling || ''}</td><td>${c.status || ''}</td><td>${c.completionDate || ''}</td><td>${c.reportingPeriod || ''}</td></tr>`;
                 });
                 tableHtml += '</tbody></table><br/>';
             }
@@ -1126,7 +1146,7 @@
             if (filteredSla.length > 0) {
                 tableHtml += `<h2>Laporan SLA - Periode: ${slaPeriodFilter}</h2><table><thead><tr><th>Cabang</th><th>Periode</th><th>On Clinic Sesuai</th><th>On Clinic Tdk Sesuai</th><th>On Clinic Penyebab</th><th>On Clinic Penanganan</th><th>On Clinic Status</th><th>On Site Sesuai</th><th>On Site Tdk Sesuai</th><th>On Site Penyebab</th><th>On Site Penanganan</th><th>On Site Status</th></tr></thead><tbody>`;
                 filteredSla.forEach(s => {
-                    tableHtml += `<tr><td>${s.branch}</td><td>${s.reportingPeriod}</td><td>${s.onClinic.jumlahSesuai}</td><td>${s.onClinic.jumlahTidakSesuai}</td><td>${s.onClinic.penyebab}</td><td>${s.onClinic.penanganan}</td><td>${s.onClinic.status}</td><td>${s.onSite.jumlahSesuai}</td><td>${s.onSite.jumlahTidakSesuai}</td><td>${s.onSite.penyebab}</td><td>${s.onSite.penanganan}</td><td>${s.onSite.status}</td></tr>`;
+                    tableHtml += `<tr><td>${s.branch || ''}</td><td>${s.reportingPeriod || ''}</td><td>${s.onClinic.jumlahSesuai}</td><td>${s.onClinic.jumlahTidakSesuai}</td><td>${s.onClinic.penyebab || ''}</td><td>${s.onClinic.penanganan || ''}</td><td>${s.onClinic.status || ''}</td><td>${s.onSite.jumlahSesuai}</td><td>${s.onSite.jumlahTidakSesuai}</td><td>${s.onSite.penyebab || ''}</td><td>${s.onSite.penanganan || ''}</td><td>${s.onSite.status || ''}</td></tr>`;
                 });
                 tableHtml += '</tbody></table><br/>';
             }
@@ -1135,7 +1155,7 @@
             if (filteredIssues.length > 0) {
                 tableHtml += `<h2>Laporan Isu - Periode: ${issuePeriodFilter}</h2><table><thead><tr><th>Cabang</th><th>Deskripsi</th><th>Dukungan</th><th>Status</th><th>Tgl Selesai</th><th>Periode</th></tr></thead><tbody>`;
                 filteredIssues.forEach(i => {
-                    tableHtml += `<tr><td>${i.branch}</td><td>${i.issueDescription}</td><td>${i.supportRequest}</td><td>${i.status}</td><td>${i.completionDate || ''}</td><td>${i.reportingPeriod}</td></tr>`;
+                    tableHtml += `<tr><td>${i.branch || ''}</td><td>${i.issueDescription || ''}</td><td>${i.supportRequest || ''}</td><td>${i.status || ''}</td><td>${i.completionDate || ''}</td><td>${i.reportingPeriod || ''}</td></tr>`;
                 });
                 tableHtml += '</tbody></table><br/>';
             }
@@ -1144,22 +1164,25 @@
             if (filteredInfo.length > 0) {
                 tableHtml += `<h2>Laporan Info Tambahan - Periode: ${infoTambahanPeriodFilter}</h2><table><thead><tr><th>Cabang</th><th>Info</th><th>Periode</th></tr></thead><tbody>`;
                 filteredInfo.forEach(info => {
-                    tableHtml += `<tr><td>${info.branch}</td><td>${info.info.replace(/\n/g, '<br/>')}</td><td>${info.reportingPeriod}</td></tr>`;
+                    const formattedInfo = (info.info || '').replace(/\n/g, '<br/>');
+                    tableHtml += `<tr><td>${info.branch || ''}</td><td>${formattedInfo}</td><td>${info.reportingPeriod || ''}</td></tr>`;
                 });
                 tableHtml += '</tbody></table>';
             }
 
             tableHtml += '</body></html>';
             
-            if (tableHtml.length < 200) {
+            if (tableHtml.length < 500) { // Increased threshold to account for header
                 return showMessage("Tidak ada data untuk diekspor.");
             }
 
-            const blob = new Blob([tableHtml], { type: 'application/vnd.ms-excel' });
+            const blob = new Blob([tableHtml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `Laporan_RegII_${formatDate(new Date()).replace(/-/g, '')}.xls`;
+            link.download = `MyReport_${formatDate(new Date()).replace(/-/g, '')}.xls`;
+            document.body.appendChild(link);
             link.click();
+            document.body.removeChild(link);
         };
 
         // --- AUTHENTICATION FUNCTIONS ---
@@ -1184,8 +1207,6 @@
         // --- INITIALIZATION ---
         const init = () => {
             try {
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-
                 // ▼▼▼ DAFTAR EMAIL YANG DIIZINKAN (GANTI DENGAN EMAIL ANDA) ▼▼▼
                 // Hapus email placeholder di bawah dan ganti dengan alamat email Google
                 // yang Anda izinkan untuk mengakses aplikasi ini.
@@ -1243,7 +1264,7 @@
                             userInfo.classList.remove('hidden-dialog');
                             userInfo.classList.add('flex');
                             
-                            setupFirestoreListeners(appId);
+                            setupFirestoreListeners();
                             renderForms();
                             addDisplayEventListeners();
                         } else {
@@ -1326,7 +1347,7 @@
             statusUpdateDialog.classList.remove('flex');
         };
         
-        const setupFirestoreListeners = (appId) => {
+        const setupFirestoreListeners = () => {
             // Clean up previous listeners before attaching new ones
             firestoreUnsubscribes.forEach(unsub => unsub());
             firestoreUnsubscribes = [];
@@ -1340,7 +1361,7 @@
             };
             
             collections.forEach(name => {
-                const q = query(collection(db, `artifacts/${appId}/users/${userId}/${name}`));
+                const q = query(collection(db, `artifacts/${APP_ID}/users/${userId}/${name}`));
                 const unsubscribe = onSnapshot(q, (snapshot) => {
                     const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     stateUpdaters[name](data);
@@ -1358,5 +1379,4 @@
     </script>
 </body>
 </html>
-
 
