@@ -199,6 +199,11 @@
         let issuePeriodFilter = 'Semua Periode';
         let infoTambahanPeriodFilter = 'Semua Periode';
         
+        // UI State for visualizations
+        let showComplaintsViz = false;
+        let showSlaViz = false;
+        let showIssuesViz = false;
+        
         // Chart instances
         let complaintsStatusChart, complaintsBranchChart;
         let slaComplianceChart, slaStatusChart, slaBranchChart;
@@ -449,6 +454,8 @@
             const container = document.getElementById('display-komplain');
             const uniquePeriods = ['Semua Periode', ...new Set(allComplaints.map(c => c.reportingPeriod))].sort();
             const filteredData = complaintPeriodFilter === 'Semua Periode' ? allComplaints : allComplaints.filter(c => c.reportingPeriod === complaintPeriodFilter);
+            const vizContainerClass = showComplaintsViz ? '' : 'hidden-dialog';
+            const vizButtonText = showComplaintsViz ? 'Sembunyikan Visualisasi' : 'Tampilkan Visualisasi';
             
             container.innerHTML = `
                 <h2 class="text-2xl font-semibold mb-4 text-indigo-700">Daftar Komplain</h2>
@@ -460,10 +467,10 @@
                         </select>
                     </div>
                     <button id="toggle-complaints-viz" class="px-3 py-2 text-sm bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition duration-200 flex items-center gap-1">
-                        <!-- SVG icon here --> Tampilkan Visualisasi
+                        ${vizButtonText}
                     </button>
                 </div>
-                <div id="complaints-viz-container" class="hidden-dialog grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div id="complaints-viz-container" class="${vizContainerClass} grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div class="bg-gray-50 p-4 rounded-lg shadow-inner border"><h3 class="text-xl font-semibold text-indigo-700 mb-3 text-center">Komplain per Status</h3><div class="chart-container"><canvas id="complaints-status-chart"></canvas></div></div>
                     <div class="bg-gray-50 p-4 rounded-lg shadow-inner border"><h3 class="text-xl font-semibold text-indigo-700 mb-3 text-center">Komplain per Cabang</h3><div class="chart-container"><canvas id="complaints-branch-chart"></canvas></div></div>
                 </div>
@@ -495,13 +502,17 @@
                     </table>`}
                 </div>
             `;
-            renderComplaintsCharts(filteredData);
+            if (showComplaintsViz) {
+                renderComplaintsCharts(filteredData);
+            }
         };
 
         const renderSlaTab = () => {
             const container = document.getElementById('display-sla');
             const uniquePeriods = ['Semua Periode', ...new Set(allSlaRecords.map(s => s.reportingPeriod))].sort();
             const filteredData = slaPeriodFilter === 'Semua Periode' ? allSlaRecords : allSlaRecords.filter(s => s.reportingPeriod === slaPeriodFilter);
+            const vizContainerClass = showSlaViz ? '' : 'hidden-dialog';
+            const vizButtonText = showSlaViz ? 'Sembunyikan Visualisasi' : 'Tampilkan Visualisasi';
             
             container.innerHTML = `
                  <h2 class="text-2xl font-semibold mb-4 text-indigo-700">Daftar Catatan SLA</h2>
@@ -513,10 +524,10 @@
                         </select>
                     </div>
                     <button id="toggle-sla-viz" class="px-3 py-2 text-sm bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition duration-200 flex items-center gap-1">
-                       Tampilkan Visualisasi
+                       ${vizButtonText}
                     </button>
                 </div>
-                <div id="sla-viz-container" class="hidden-dialog bg-gray-50 p-4 rounded-lg shadow-inner mb-6 border">
+                <div id="sla-viz-container" class="${vizContainerClass} bg-gray-50 p-4 rounded-lg shadow-inner mb-6 border">
                     <!-- Charts will be rendered here -->
                 </div>
                 <div class="overflow-x-auto rounded-lg shadow-md border">
@@ -546,13 +557,17 @@
                     </table>`}
                 </div>
             `;
-            renderSlaCharts(filteredData);
+            if (showSlaViz) {
+                renderSlaCharts(filteredData);
+            }
         };
         
         const renderIssuesTab = () => {
             const container = document.getElementById('display-isu');
             const uniquePeriods = ['Semua Periode', ...new Set(allIssues.map(i => i.reportingPeriod))].sort();
             const filteredData = issuePeriodFilter === 'Semua Periode' ? allIssues : allIssues.filter(i => i.reportingPeriod === issuePeriodFilter);
+            const vizContainerClass = showIssuesViz ? '' : 'hidden-dialog';
+            const vizButtonText = showIssuesViz ? 'Sembunyikan Visualisasi' : 'Tampilkan Visualisasi';
             
             container.innerHTML = `
                 <h2 class="text-2xl font-semibold mb-4 text-indigo-700">Daftar Isu & Dukungan</h2>
@@ -564,10 +579,10 @@
                         </select>
                     </div>
                     <button id="toggle-issues-viz" class="px-3 py-2 text-sm bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition duration-200 flex items-center gap-1">
-                        Tampilkan Visualisasi
+                        ${vizButtonText}
                     </button>
                 </div>
-                <div id="issues-viz-container" class="hidden-dialog grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div id="issues-viz-container" class="${vizContainerClass} grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div class="bg-gray-50 p-4 rounded-lg shadow-inner border"><h3 class="text-xl font-semibold text-indigo-700 mb-3 text-center">Isu per Status</h3><div class="chart-container"><canvas id="issues-status-chart"></canvas></div></div>
                     <div class="bg-gray-50 p-4 rounded-lg shadow-inner border"><h3 class="text-xl font-semibold text-indigo-700 mb-3 text-center">Isu per Cabang</h3><div class="chart-container"><canvas id="issues-branch-chart"></canvas></div></div>
                 </div>
@@ -599,7 +614,9 @@
                     </table>`}
                 </div>
             `;
-            renderIssuesCharts(filteredData);
+            if (showIssuesViz) {
+                renderIssuesCharts(filteredData);
+            }
         };
         
         const renderInfoTambahanTab = () => {
@@ -863,26 +880,34 @@
             });
 
             document.body.addEventListener('click', (e) => {
-                const target = e.target;
-                // Toggle visualization
-                if (target.id === 'toggle-complaints-viz') {
-                    document.getElementById('complaints-viz-container').classList.toggle('hidden-dialog');
-                    target.textContent = target.textContent.includes('Tampilkan') ? 'Sembunyikan Visualisasi' : 'Tampilkan Visualisasi';
-                } else if (target.id === 'toggle-sla-viz') {
-                     document.getElementById('sla-viz-container').classList.toggle('hidden-dialog');
-                    target.textContent = target.textContent.includes('Tampilkan') ? 'Sembunyikan Visualisasi' : 'Tampilkan Visualisasi';
-                } else if (target.id === 'toggle-issues-viz') {
-                     document.getElementById('issues-viz-container').classList.toggle('hidden-dialog');
-                    target.textContent = target.textContent.includes('Tampilkan') ? 'Sembunyikan Visualisasi' : 'Tampilkan Visualisasi';
-                }
+                const button = e.target.closest('button');
+                if (!button) return;
 
-                // Delete and Status Update buttons
-                const row = target.closest('tr');
-                if (!row) return;
+                // --- Visualization Toggles ---
+                if (button.id === 'toggle-complaints-viz') {
+                    showComplaintsViz = !showComplaintsViz;
+                    renderComplaintsTab();
+                    return; 
+                }
+                if (button.id === 'toggle-sla-viz') {
+                    showSlaViz = !showSlaViz;
+                    renderSlaTab();
+                    return; 
+                }
+                if (button.id === 'toggle-issues-viz') {
+                    showIssuesViz = !showIssuesViz;
+                    renderIssuesTab();
+                    return; 
+                }
+                
+                // --- Table Action Buttons ---
+                const row = button.closest('tr');
+                if (!row) return; 
+
                 const id = row.dataset.id;
                 
-                if (target.classList.contains('delete-btn')) {
-                    const type = target.dataset.type;
+                if (button.classList.contains('delete-btn')) {
+                    const type = button.dataset.type;
                     const message = `Apakah Anda yakin ingin menghapus item ini?`;
                     showConfirmation(message, () => {
                         if (type === 'complaint') deleteItem('complaints', id);
@@ -890,10 +915,10 @@
                         else if (type === 'issue') deleteItem('issues', id);
                         else if (type === 'infoTambahan') deleteItem('infoTambahan', id);
                     });
-                } else if (target.classList.contains('status-update-btn')) {
-                    const type = target.dataset.type;
-                    const currentStatus = target.dataset.status;
-                    const subService = target.dataset.subservice || null;
+                } else if (button.classList.contains('status-update-btn')) {
+                    const type = button.dataset.type;
+                    const currentStatus = button.dataset.status;
+                    const subService = button.dataset.subservice || null;
                     openStatusUpdateDialog(id, type, currentStatus, subService);
                 }
             });
