@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -64,20 +64,22 @@
             <!-- Header -->
             <header class="bg-white shadow-lg rounded-xl p-4 mb-8 flex flex-col sm:flex-row items-center justify-between">
                 <h1 class="text-3xl font-bold text-indigo-800 mb-2 sm:mb-0">MyReport</h1>
-                <div id="user-info" class="hidden-dialog items-center gap-3">
-                    <img id="user-photo" class="w-10 h-10 rounded-full" src="" alt="User Photo">
-                    <div class="text-sm">
-                        <span id="user-name" class="font-semibold text-gray-800"></span>
-                        <span id="user-email" class="text-gray-500"></span>
+                <div class="flex flex-col sm:flex-row items-center gap-4">
+                    <div id="user-info" class="hidden-dialog items-center gap-3">
+                        <img id="user-photo" class="w-10 h-10 rounded-full" src="" alt="User Photo">
+                        <div class="text-sm text-center sm:text-left">
+                            <span id="user-name" class="font-semibold text-gray-800"></span>
+                            <span id="user-email" class="text-gray-500 block"></span>
+                        </div>
+                        <button id="signout-btn" class="ml-4 bg-red-500 text-white py-2 px-3 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-200 text-sm">Sign Out</button>
                     </div>
-                    <button id="signout-btn" class="ml-4 bg-red-500 text-white py-2 px-3 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-200 text-sm">Sign Out</button>
-                </div>
-                <button id="export-excel-btn" class="mt-4 sm:mt-0 bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-200 flex items-center justify-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                    </svg>
-                    Export Semua Data ke Excel
-                </button>
+                    <button id="export-excel-btn" class="mt-4 sm:mt-0 bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-200 flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                        Export Semua Data ke Excel
+                    </button>
+                 </div>
             </header>
 
             <!-- Navigation Tabs -->
@@ -135,7 +137,7 @@
 
     <!-- Dialogs -->
     <!-- Message Dialog -->
-    <div id="message-dialog" class="hidden-dialog fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div id="message-dialog" class="hidden-dialog fixed inset-0 bg-gray-600 bg-opacity-50 p-4 z-50">
         <div class="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
             <p id="message-dialog-content" class="text-lg font-medium text-gray-800 mb-4"></p>
             <button id="message-dialog-ok-btn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-200">OK</button>
@@ -143,7 +145,7 @@
     </div>
 
     <!-- Confirmation Dialog -->
-    <div id="confirmation-dialog" class="hidden-dialog fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div id="confirmation-dialog" class="hidden-dialog fixed inset-0 bg-gray-600 bg-opacity-50 p-4 z-50">
         <div class="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
             <p id="confirmation-dialog-content" class="text-lg font-medium text-gray-800 mb-4"></p>
             <div class="flex justify-end gap-3">
@@ -154,7 +156,7 @@
     </div>
 
     <!-- Status Update Dialog -->
-    <div id="status-update-dialog" class="hidden-dialog fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div id="status-update-dialog" class="hidden-dialog fixed inset-0 bg-gray-600 bg-opacity-50 p-4 z-50">
         <div class="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
             <h3 class="text-xl font-semibold text-gray-800 mb-4">Ubah Status</h3>
             <div class="mb-4">
@@ -178,11 +180,11 @@
     <script type="module">
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, signInWithCustomToken, signInAnonymously, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- GLOBAL STATE AND CONSTANTS ---
-        const APP_ID = typeof __app_id !== 'undefined' ? __app_id : 'my-report-app-stable-id';
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'my-report-app-default';
         let db, auth;
         let userId = null;
         let activeTab = 'komplain';
@@ -275,35 +277,36 @@
         const showMessage = (message) => {
             messageDialogContent.textContent = message;
             messageDialog.classList.remove('hidden-dialog');
-            messageDialog.classList.add('flex');
+            messageDialog.classList.add('flex', 'items-center', 'justify-center');
         };
 
         const hideMessage = () => {
             messageDialog.classList.add('hidden-dialog');
-            messageDialog.classList.remove('flex');
+            messageDialog.classList.remove('flex', 'items-center', 'justify-center');
         };
 
         const showConfirmation = (message, onConfirm) => {
             confirmationDialogContent.textContent = message;
             confirmationDialog.classList.remove('hidden-dialog');
-            confirmationDialog.classList.add('flex');
-            // Clone and replace the button to remove old event listeners
+            confirmationDialog.classList.add('flex', 'items-center', 'justify-center');
+            
             const newConfirmBtn = confirmationDialogConfirmBtn.cloneNode(true);
             confirmationDialogConfirmBtn.parentNode.replaceChild(newConfirmBtn, confirmationDialogConfirmBtn);
-            newConfirmBtn.addEventListener('click', () => {
+            
+            const confirmHandler = () => {
                 onConfirm();
                 hideConfirmation();
-            });
+            };
+            newConfirmBtn.addEventListener('click', confirmHandler, { once: true });
         };
         
         const hideConfirmation = () => {
             confirmationDialog.classList.add('hidden-dialog');
-            confirmationDialog.classList.remove('flex');
+            confirmationDialog.classList.remove('flex', 'items-center', 'justify-center');
         };
         
         // --- RENDER FUNCTIONS ---
         
-        // Helper to create input fields for forms
         const createFormElement = (id, name, label, type = 'text', options = {}) => {
             const { placeholder = '', value = '', rows = 3, required = false, selectOptions = [] } = options;
             const wrapper = document.createElement('div');
@@ -319,6 +322,8 @@
                 const defaultOption = document.createElement('option');
                 defaultOption.value = "";
                 defaultOption.textContent = `Pilih ${label}`;
+                defaultOption.disabled = true;
+                defaultOption.selected = value === '';
                 inputEl.appendChild(defaultOption);
                 selectOptions.forEach(opt => {
                     const optionEl = document.createElement('option');
@@ -337,7 +342,6 @@
                 inputEl.type = type;
                 inputEl.placeholder = placeholder;
                 inputEl.value = value;
-                if (type === 'date') inputEl.className = "w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500";
             }
             
             inputEl.id = id;
@@ -345,7 +349,7 @@
             inputEl.className = "w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500";
             if (options.readOnly) {
                 inputEl.readOnly = true;
-                inputEl.classList.add('bg-gray-50', 'focus:outline-none');
+                inputEl.classList.add('bg-gray-100');
             }
             if (required) inputEl.required = true;
 
@@ -361,12 +365,12 @@
             formKomplain.innerHTML = `
                 <h2 class="text-2xl font-semibold mb-4 text-indigo-700">Tambah Komplain Baru</h2>
                 <div class="space-y-4">
-                    ${createFormElement('compBranch', 'branch', 'Cabang', 'select', { selectOptions: branches }).outerHTML}
-                    ${createFormElement('compPeriodStartDate', 'periodStartDate', 'Mulai Periode Pelaporan', 'date', { value: period.startDate }).outerHTML}
-                    ${createFormElement('compPeriodEndDate', 'periodEndDate', 'Akhir Periode Pelaporan', 'date', { value: period.endDate }).outerHTML}
+                    ${createFormElement('compBranch', 'branch', 'Cabang', 'select', { selectOptions: branches, required: true }).outerHTML}
+                    ${createFormElement('compPeriodStartDate', 'periodStartDate', 'Mulai Periode Pelaporan', 'date', { value: period.startDate, required: true }).outerHTML}
+                    ${createFormElement('compPeriodEndDate', 'periodEndDate', 'Akhir Periode Pelaporan', 'date', { value: period.endDate, required: true }).outerHTML}
                     ${createFormElement('compReportingPeriodDisplay', 'reportingPeriodDisplay', 'Periode Pelaporan (Terbentuk)', 'text', { value: period.formattedPeriod, readOnly: true }).outerHTML}
-                    ${createFormElement('compTitle', 'title', 'Judul Komplain', 'text', { placeholder: 'Antrian panjang di kasir' }).outerHTML}
-                    ${createFormElement('compDesc', 'description', 'Deskripsi Detail', 'textarea', { placeholder: 'Pasien mengeluhkan antrian yang sangat panjang...' }).outerHTML}
+                    ${createFormElement('compTitle', 'title', 'Judul Komplain', 'text', { placeholder: 'Antrian panjang di kasir', required: true }).outerHTML}
+                    ${createFormElement('compDesc', 'description', 'Deskripsi Detail', 'textarea', { placeholder: 'Pasien mengeluhkan antrian yang sangat panjang...', required: true }).outerHTML}
                     ${createFormElement('compHandling', 'handling', 'Tindakan Penanganan', 'textarea', { placeholder: 'Sudah dilakukan penambahan staf...' }).outerHTML}
                     ${createFormElement('compStatus', 'status', 'Status', 'select', { selectOptions: statusOptions, value: 'Dalam Proses' }).outerHTML}
                     <button id="add-complaint-btn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-200">Tambah Komplain</button>
@@ -378,9 +382,9 @@
             formSla.innerHTML = `
                 <h2 class="text-2xl font-semibold mb-4 text-indigo-700">Tambah Catatan SLA</h2>
                 <div class="space-y-4">
-                    ${createFormElement('slaBranch', 'branch', 'Cabang', 'select', { selectOptions: branches }).outerHTML}
-                    ${createFormElement('slaPeriodStartDate', 'periodStartDate', 'Mulai Periode Pelaporan', 'date', { value: period.startDate }).outerHTML}
-                    ${createFormElement('slaPeriodEndDate', 'periodEndDate', 'Akhir Periode Pelaporan', 'date', { value: period.endDate }).outerHTML}
+                    ${createFormElement('slaBranch', 'branch', 'Cabang', 'select', { selectOptions: branches, required: true }).outerHTML}
+                    ${createFormElement('slaPeriodStartDate', 'periodStartDate', 'Mulai Periode Pelaporan', 'date', { value: period.startDate, required: true }).outerHTML}
+                    ${createFormElement('slaPeriodEndDate', 'periodEndDate', 'Akhir Periode Pelaporan', 'date', { value: period.endDate, required: true }).outerHTML}
                     ${createFormElement('slaReportingPeriodDisplay', 'reportingPeriodDisplay', 'Periode Pelaporan (Terbentuk)', 'text', { value: period.formattedPeriod, readOnly: true }).outerHTML}
                     
                     <!-- On Clinic Section -->
@@ -412,14 +416,14 @@
             formIsu.innerHTML = `
                 <h2 class="text-2xl font-semibold mb-4 text-indigo-700">Tambah Isu Baru</h2>
                 <div class="space-y-4">
-                    ${createFormElement('issueBranch', 'branch', 'Cabang', 'select', { selectOptions: branches }).outerHTML}
-                    ${createFormElement('issuePeriodStartDate', 'periodStartDate', 'Mulai Periode Pelaporan', 'date', { value: period.startDate }).outerHTML}
-                    ${createFormElement('issuePeriodEndDate', 'periodEndDate', 'Akhir Periode Pelaporan', 'date', { value: period.endDate }).outerHTML}
+                    ${createFormElement('issueBranch', 'branch', 'Cabang', 'select', { selectOptions: branches, required: true }).outerHTML}
+                    ${createFormElement('issuePeriodStartDate', 'periodStartDate', 'Mulai Periode Pelaporan', 'date', { value: period.startDate, required: true }).outerHTML}
+                    ${createFormElement('issuePeriodEndDate', 'periodEndDate', 'Akhir Periode Pelaporan', 'date', { value: period.endDate, required: true }).outerHTML}
                     ${createFormElement('issueReportingPeriodDisplay', 'reportingPeriodDisplay', 'Periode Pelaporan (Terbentuk)', 'text', { value: period.formattedPeriod, readOnly: true }).outerHTML}
                     <div class="bg-gray-100 p-4 rounded-lg border border-gray-200 space-y-2">
                         <h3 class="text-lg font-semibold text-indigo-700">Detail Isu</h3>
-                        ${createFormElement('issueDesc', 'issueDescription', 'Deskripsi Isu', 'textarea', { placeholder: 'Mesin USG sering rusak...' }).outerHTML}
-                        ${createFormElement('issueSupport', 'supportRequest', 'Permintaan Dukungan', 'textarea', { placeholder: 'Butuh alokasi dana...' }).outerHTML}
+                        ${createFormElement('issueDesc', 'issueDescription', 'Deskripsi Isu', 'textarea', { placeholder: 'Mesin USG sering rusak...', required: true }).outerHTML}
+                        ${createFormElement('issueSupport', 'supportRequest', 'Permintaan Dukungan', 'textarea', { placeholder: 'Butuh alokasi dana...', required: true }).outerHTML}
                         ${createFormElement('issueStatus', 'status', 'Status', 'select', { selectOptions: statusOptions, value: 'Dalam Proses' }).outerHTML}
                     </div>
                     <button id="add-issue-btn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-200">Tambah Isu</button>
@@ -431,16 +435,15 @@
             formInfoTambahan.innerHTML = `
                 <h2 class="text-2xl font-semibold mb-4 text-indigo-700">Tambah Info Baru</h2>
                 <div class="space-y-4">
-                    ${createFormElement('infoBranch', 'branch', 'Cabang', 'select', { selectOptions: branches }).outerHTML}
-                    ${createFormElement('infoPeriodStartDate', 'periodStartDate', 'Mulai Periode Pelaporan', 'date', { value: period.startDate }).outerHTML}
-                    ${createFormElement('infoPeriodEndDate', 'periodEndDate', 'Akhir Periode Pelaporan', 'date', { value: period.endDate }).outerHTML}
+                    ${createFormElement('infoBranch', 'branch', 'Cabang', 'select', { selectOptions: branches, required: true }).outerHTML}
+                    ${createFormElement('infoPeriodStartDate', 'periodStartDate', 'Mulai Periode Pelaporan', 'date', { value: period.startDate, required: true }).outerHTML}
+                    ${createFormElement('infoPeriodEndDate', 'periodEndDate', 'Akhir Periode Pelaporan', 'date', { value: period.endDate, required: true }).outerHTML}
                     ${createFormElement('infoReportingPeriodDisplay', 'reportingPeriodDisplay', 'Periode Pelaporan (Terbentuk)', 'text', { value: period.formattedPeriod, readOnly: true }).outerHTML}
-                    ${createFormElement('infoField', 'info', 'Info', 'textarea', { rows: 5, value: '• ', placeholder: '• Masukkan poin info...' }).outerHTML}
+                    ${createFormElement('infoField', 'info', 'Info', 'textarea', { rows: 5, value: '• ', placeholder: '• Masukkan poin info...', required: true }).outerHTML}
                     <button id="add-info-btn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-200">Tambah Info</button>
                 </div>
             `;
             
-            // Add event listeners after rendering
             addFormEventListeners();
         };
         
@@ -453,7 +456,7 @@
 
         const renderComplaintsTab = () => {
             const container = document.getElementById('display-komplain');
-            const uniquePeriods = ['Semua Periode', ...new Set(allComplaints.map(c => c.reportingPeriod))].sort();
+            const uniquePeriods = ['Semua Periode', ...new Set(allComplaints.map(c => c.reportingPeriod))].filter(Boolean).sort();
             const filteredData = complaintPeriodFilter === 'Semua Periode' ? allComplaints : allComplaints.filter(c => c.reportingPeriod === complaintPeriodFilter);
             const vizContainerClass = showComplaintsViz ? '' : 'hidden-dialog';
             const vizButtonText = showComplaintsViz ? 'Sembunyikan Visualisasi' : 'Tampilkan Visualisasi';
@@ -476,7 +479,7 @@
                     <div class="bg-gray-50 p-4 rounded-lg shadow-inner border"><h3 class="text-xl font-semibold text-indigo-700 mb-3 text-center">Komplain per Cabang</h3><div class="chart-container"><canvas id="complaints-branch-chart"></canvas></div></div>
                 </div>
                 <div class="overflow-x-auto rounded-lg shadow-md border">
-                    ${filteredData.length === 0 ? '<p class="text-gray-500 p-4">Belum ada data.</p>' : `
+                    ${filteredData.length === 0 ? '<p class="text-gray-500 p-4 text-center">Belum ada data komplain.</p>' : `
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50"><tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cabang</th>
@@ -510,7 +513,7 @@
 
         const renderSlaTab = () => {
             const container = document.getElementById('display-sla');
-            const uniquePeriods = ['Semua Periode', ...new Set(allSlaRecords.map(s => s.reportingPeriod))].sort();
+            const uniquePeriods = ['Semua Periode', ...new Set(allSlaRecords.map(s => s.reportingPeriod))].filter(Boolean).sort();
             const filteredData = slaPeriodFilter === 'Semua Periode' ? allSlaRecords : allSlaRecords.filter(s => s.reportingPeriod === slaPeriodFilter);
             const vizContainerClass = showSlaViz ? '' : 'hidden-dialog';
             const vizButtonText = showSlaViz ? 'Sembunyikan Visualisasi' : 'Tampilkan Visualisasi';
@@ -518,21 +521,21 @@
             container.innerHTML = `
                  <h2 class="text-2xl font-semibold mb-4 text-indigo-700">Daftar Catatan SLA</h2>
                  <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
-                    <div class="flex items-center">
-                        <label for="slaPeriodFilter" class="block text-sm font-medium text-gray-700">Filter Periode</label>
-                        <select id="slaPeriodFilter" class="ml-3 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
-                            ${uniquePeriods.map(p => `<option value="${p}" ${p === slaPeriodFilter ? 'selected' : ''}>${p}</option>`).join('')}
-                        </select>
-                    </div>
-                    <button id="toggle-sla-viz" class="px-3 py-2 text-sm bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition duration-200 flex items-center gap-1">
-                       ${vizButtonText}
-                    </button>
+                     <div class="flex items-center">
+                         <label for="slaPeriodFilter" class="block text-sm font-medium text-gray-700">Filter Periode</label>
+                         <select id="slaPeriodFilter" class="ml-3 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                             ${uniquePeriods.map(p => `<option value="${p}" ${p === slaPeriodFilter ? 'selected' : ''}>${p}</option>`).join('')}
+                         </select>
+                     </div>
+                     <button id="toggle-sla-viz" class="px-3 py-2 text-sm bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition duration-200 flex items-center gap-1">
+                        ${vizButtonText}
+                     </button>
                 </div>
                 <div id="sla-viz-container" class="${vizContainerClass} bg-gray-50 p-4 rounded-lg shadow-inner mb-6 border">
                     <!-- Charts will be rendered here -->
                 </div>
                 <div class="overflow-x-auto rounded-lg shadow-md border">
-                     ${filteredData.length === 0 ? '<p class="text-gray-500 p-4">Belum ada data.</p>' : `
+                     ${filteredData.length === 0 ? '<p class="text-gray-500 p-4 text-center">Belum ada data SLA.</p>' : `
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50"><tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cabang</th>
@@ -548,9 +551,9 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold ${s.onSite.status === 'Selesai' ? 'text-green-600' : 'text-blue-600'}">${s.onSite.status}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex flex-col gap-2">
-                                        <button class="status-update-btn text-blue-600 hover:text-blue-900" data-type="sla" data-subservice="onClinic" data-status="${s.onClinic.status}">Ubah Status On Clinic</button>
-                                        <button class="status-update-btn text-blue-600 hover:text-blue-900" data-type="sla" data-subservice="onSite" data-status="${s.onSite.status}">Ubah Status On Site</button>
-                                        <button class="delete-btn text-red-600 hover:text-red-900" data-type="sla">Hapus</button>
+                                        <button class="status-update-btn text-blue-600 hover:text-blue-900 text-left" data-type="sla" data-subservice="onClinic" data-status="${s.onClinic.status}">Ubah Status On Clinic</button>
+                                        <button class="status-update-btn text-blue-600 hover:text-blue-900 text-left" data-type="sla" data-subservice="onSite" data-status="${s.onSite.status}">Ubah Status On Site</button>
+                                        <button class="delete-btn text-red-600 hover:text-red-900 text-left mt-1" data-type="sla">Hapus Data</button>
                                     </div>
                                 </td>
                             </tr>`).join('')}
@@ -565,7 +568,7 @@
         
         const renderIssuesTab = () => {
             const container = document.getElementById('display-isu');
-            const uniquePeriods = ['Semua Periode', ...new Set(allIssues.map(i => i.reportingPeriod))].sort();
+            const uniquePeriods = ['Semua Periode', ...new Set(allIssues.map(i => i.reportingPeriod))].filter(Boolean).sort();
             const filteredData = issuePeriodFilter === 'Semua Periode' ? allIssues : allIssues.filter(i => i.reportingPeriod === issuePeriodFilter);
             const vizContainerClass = showIssuesViz ? '' : 'hidden-dialog';
             const vizButtonText = showIssuesViz ? 'Sembunyikan Visualisasi' : 'Tampilkan Visualisasi';
@@ -588,7 +591,7 @@
                     <div class="bg-gray-50 p-4 rounded-lg shadow-inner border"><h3 class="text-xl font-semibold text-indigo-700 mb-3 text-center">Isu per Cabang</h3><div class="chart-container"><canvas id="issues-branch-chart"></canvas></div></div>
                 </div>
                 <div class="overflow-x-auto rounded-lg shadow-md border">
-                    ${filteredData.length === 0 ? '<p class="text-gray-500 p-4">Belum ada data.</p>' : `
+                    ${filteredData.length === 0 ? '<p class="text-gray-500 p-4 text-center">Belum ada data isu.</p>' : `
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50"><tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cabang</th>
@@ -601,7 +604,7 @@
                              ${filteredData.map(i => `
                             <tr data-id="${i.id}">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">${i.branch}</td>
-                                <td class="px-6 py-4 text-sm max-w-xs truncate">${i.issueDescription}</td>
+                                <td class="px-6 py-4 text-sm max-w-xs truncate" title="${i.issueDescription}">${i.issueDescription}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold ${i.status === 'Selesai' ? 'text-green-600' : 'text-blue-600'}">${i.status}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">${i.completionDate || '-'}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -622,7 +625,7 @@
         
         const renderInfoTambahanTab = () => {
             const container = document.getElementById('display-infoTambahan');
-            const uniquePeriods = ['Semua Periode', ...new Set(allInfoTambahan.map(i => i.reportingPeriod))].sort();
+            const uniquePeriods = ['Semua Periode', ...new Set(allInfoTambahan.map(i => i.reportingPeriod))].filter(Boolean).sort();
             const filteredData = infoTambahanPeriodFilter === 'Semua Periode' ? allInfoTambahan : allInfoTambahan.filter(i => i.reportingPeriod === infoTambahanPeriodFilter);
 
             container.innerHTML = `
@@ -636,7 +639,7 @@
                     </div>
                 </div>
                 <div class="overflow-x-auto rounded-lg shadow-md border">
-                    ${filteredData.length === 0 ? '<p class="text-gray-500 p-4">Belum ada data.</p>' : `
+                    ${filteredData.length === 0 ? '<p class="text-gray-500 p-4 text-center">Belum ada info tambahan.</p>' : `
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50"><tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cabang</th>
@@ -671,8 +674,10 @@
 
             if (data.length === 0) return;
 
-            const statusCtx = document.getElementById('complaints-status-chart').getContext('2d');
-            const branchCtx = document.getElementById('complaints-branch-chart').getContext('2d');
+            const statusCtx = document.getElementById('complaints-status-chart')?.getContext('2d');
+            const branchCtx = document.getElementById('complaints-branch-chart')?.getContext('2d');
+            
+            if (!statusCtx || !branchCtx) return;
 
             const statusCounts = data.reduce((acc, curr) => {
                 acc[curr.status] = (acc[curr.status] || 0) + 1;
@@ -721,21 +726,20 @@
                 return;
             }
 
-            // Calculate summary
             let totalCompliant = 0, totalNonCompliant = 0;
             const statusCounts = { 'Dalam Proses': 0, 'Selesai': 0 };
             const branchData = branches.map(b => ({ branch: b, compliant: 0, nonCompliant: 0 }));
 
             data.forEach(rec => {
-                totalCompliant += rec.onClinic.jumlahSesuai + rec.onSite.jumlahSesuai;
-                totalNonCompliant += rec.onClinic.jumlahTidakSesuai + rec.onSite.jumlahTidakSesuai;
-                if(rec.onClinic.jumlahTidakSesuai > 0) statusCounts[rec.onClinic.status]++;
-                if(rec.onSite.jumlahTidakSesuai > 0) statusCounts[rec.onSite.status]++;
+                totalCompliant += (rec.onClinic?.jumlahSesuai || 0) + (rec.onSite?.jumlahSesuai || 0);
+                totalNonCompliant += (rec.onClinic?.jumlahTidakSesuai || 0) + (rec.onSite?.jumlahTidakSesuai || 0);
+                if(rec.onClinic?.jumlahTidakSesuai > 0) statusCounts[rec.onClinic.status]++;
+                if(rec.onSite?.jumlahTidakSesuai > 0) statusCounts[rec.onSite.status]++;
                 
                 const branch = branchData.find(b => b.branch === rec.branch);
                 if (branch) {
-                    branch.compliant += rec.onClinic.jumlahSesuai + rec.onSite.jumlahSesuai;
-                    branch.nonCompliant += rec.onClinic.jumlahTidakSesuai + rec.onSite.jumlahTidakSesuai;
+                    branch.compliant += (rec.onClinic?.jumlahSesuai || 0) + (rec.onSite?.jumlahSesuai || 0);
+                    branch.nonCompliant += (rec.onClinic?.jumlahTidakSesuai || 0) + (rec.onSite?.jumlahTidakSesuai || 0);
                 }
             });
             const totalServices = totalCompliant + totalNonCompliant;
@@ -756,7 +760,6 @@
                 </div>
             `;
             
-            // Render charts
             slaComplianceChart = new Chart(document.getElementById('sla-compliance-chart').getContext('2d'), {
                 type: 'doughnut',
                 data: { labels: ['Sesuai SLA', 'Tidak Sesuai SLA'], datasets: [{ data: [totalCompliant, totalNonCompliant], backgroundColor: ['#82ca9d', '#FF8042'] }] },
@@ -786,8 +789,10 @@
 
             if (data.length === 0) return;
 
-            const statusCtx = document.getElementById('issues-status-chart').getContext('2d');
-            const branchCtx = document.getElementById('issues-branch-chart').getContext('2d');
+            const statusCtx = document.getElementById('issues-status-chart')?.getContext('2d');
+            const branchCtx = document.getElementById('issues-branch-chart')?.getContext('2d');
+
+            if (!statusCtx || !branchCtx) return;
 
             const statusCounts = data.reduce((acc, curr) => {
                 acc[curr.status] = (acc[curr.status] || 0) + 1;
@@ -827,7 +832,6 @@
 
         // --- EVENT LISTENERS ---
         const addFormEventListeners = () => {
-            // Period date change handlers
             const handlePeriodChange = (formId) => {
                 const startDateEl = document.getElementById(`${formId}PeriodStartDate`);
                 const endDateEl = document.getElementById(`${formId}PeriodEndDate`);
@@ -845,18 +849,18 @@
             handlePeriodChange('issue');
             handlePeriodChange('info');
             
-            // Bullet points for Info Tambahan
             const infoField = document.getElementById('infoField');
             if(infoField) {
                 infoField.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
-                        e.target.value += '\n• ';
+                        const { selectionStart, selectionEnd, value } = e.target;
+                        e.target.value = value.slice(0, selectionStart) + '\n• ' + value.slice(selectionEnd);
+                        e.target.selectionStart = e.target.selectionEnd = selectionStart + 3;
                     }
                 });
             }
 
-            // Add button listeners
             document.getElementById('add-complaint-btn').addEventListener('click', addComplaint);
             document.getElementById('add-sla-btn').addEventListener('click', addSlaRecord);
             document.getElementById('add-issue-btn').addEventListener('click', addIssue);
@@ -884,7 +888,6 @@
                 const button = e.target.closest('button');
                 if (!button) return;
 
-                // --- Visualization Toggles ---
                 if (button.id === 'toggle-complaints-viz') {
                     showComplaintsViz = !showComplaintsViz;
                     renderComplaintsTab();
@@ -901,7 +904,6 @@
                     return; 
                 }
                 
-                // --- Table Action Buttons ---
                 const row = button.closest('tr');
                 if (!row) return; 
 
@@ -909,7 +911,7 @@
                 
                 if (button.classList.contains('delete-btn')) {
                     const type = button.dataset.type;
-                    const message = `Apakah Anda yakin ingin menghapus item ini?`;
+                    const message = `Apakah Anda yakin ingin menghapus item ini? Tindakan ini tidak dapat dibatalkan.`;
                     showConfirmation(message, () => {
                         if (type === 'complaint') deleteItem('complaints', id);
                         else if (type === 'sla') deleteItem('slaRecords', id);
@@ -944,12 +946,12 @@
                 return showMessage("Harap lengkapi Cabang, Judul, dan Deskripsi.");
             }
             try {
-                await addDoc(collection(db, `artifacts/${APP_ID}/users/${userId}/complaints`), newComplaint);
+                await addDoc(collection(db, `artifacts/${appId}/users/${userId}/complaints`), newComplaint);
                 showMessage("Komplain berhasil ditambahkan!");
-                renderForms(); // Reset form
+                renderForms();
             } catch (e) {
-                showMessage("Gagal menambahkan komplain.");
-                console.error(e);
+                showMessage(`Gagal menambahkan komplain: ${e.message}`);
+                console.error("Add complaint error: ", e);
             }
         };
         
@@ -960,15 +962,15 @@
                 periodStartDate: form.querySelector('[name="periodStartDate"]').value,
                 periodEndDate: form.querySelector('[name="periodEndDate"]').value,
                 onClinic: {
-                    jumlahSesuai: Number(form.querySelector('[name="onClinic.jumlahSesuai"]').value),
-                    jumlahTidakSesuai: Number(form.querySelector('[name="onClinic.jumlahTidakSesuai"]').value),
+                    jumlahSesuai: Number(form.querySelector('[name="onClinic.jumlahSesuai"]').value) || 0,
+                    jumlahTidakSesuai: Number(form.querySelector('[name="onClinic.jumlahTidakSesuai"]').value) || 0,
                     penyebab: form.querySelector('[name="onClinic.penyebab"]').value,
                     penanganan: form.querySelector('[name="onClinic.penanganan"]').value,
                     status: form.querySelector('[name="onClinic.status"]').value,
                 },
                 onSite: {
-                    jumlahSesuai: Number(form.querySelector('[name="onSite.jumlahSesuai"]').value),
-                    jumlahTidakSesuai: Number(form.querySelector('[name="onSite.jumlahTidakSesuai"]').value),
+                    jumlahSesuai: Number(form.querySelector('[name="onSite.jumlahSesuai"]').value) || 0,
+                    jumlahTidakSesuai: Number(form.querySelector('[name="onSite.jumlahTidakSesuai"]').value) || 0,
                     penyebab: form.querySelector('[name="onSite.penyebab"]').value,
                     penanganan: form.querySelector('[name="onSite.penanganan"]').value,
                     status: form.querySelector('[name="onSite.status"]').value,
@@ -981,12 +983,12 @@
             if (!newSla.branch) return showMessage("Harap pilih Cabang.");
             
             try {
-                await addDoc(collection(db, `artifacts/${APP_ID}/users/${userId}/slaRecords`), newSla);
+                await addDoc(collection(db, `artifacts/${appId}/users/${userId}/slaRecords`), newSla);
                 showMessage("Catatan SLA berhasil ditambahkan!");
-                renderForms(); // Reset form
+                renderForms();
             } catch (e) {
-                showMessage("Gagal menambahkan catatan SLA.");
-                console.error(e);
+                showMessage(`Gagal menambahkan catatan SLA: ${e.message}`);
+                console.error("Add SLA error: ", e);
             }
         };
 
@@ -1007,12 +1009,12 @@
                 return showMessage("Harap lengkapi semua bidang Isu.");
             }
             try {
-                await addDoc(collection(db, `artifacts/${APP_ID}/users/${userId}/issues`), newIssue);
+                await addDoc(collection(db, `artifacts/${appId}/users/${userId}/issues`), newIssue);
                 showMessage("Isu berhasil ditambahkan!");
-                renderForms(); // Reset form
+                renderForms();
             } catch (e) {
-                showMessage("Gagal menambahkan isu.");
-                console.error(e);
+                showMessage(`Gagal menambahkan isu: ${e.message}`);
+                console.error("Add issue error: ", e);
             }
         };
 
@@ -1026,76 +1028,80 @@
             };
             newInfo.reportingPeriod = formatReportingPeriod(newInfo.periodStartDate, newInfo.periodEndDate);
 
-            if (!newInfo.branch || !newInfo.info) {
+            if (!newInfo.branch || !newInfo.info || newInfo.info.trim() === '•') {
                 return showMessage("Harap lengkapi Cabang dan Info.");
             }
             try {
-                await addDoc(collection(db, `artifacts/${APP_ID}/users/${userId}/infoTambahan`), newInfo);
+                await addDoc(collection(db, `artifacts/${appId}/users/${userId}/infoTambahan`), newInfo);
                 showMessage("Info berhasil ditambahkan!");
-                renderForms(); // Reset form
+                renderForms();
             } catch (e) {
-                showMessage("Gagal menambahkan info.");
-                console.error(e);
+                showMessage(`Gagal menambahkan info: ${e.message}`);
+                console.error("Add info error: ", e);
             }
         };
         
         const deleteItem = async (collectionName, id) => {
             try {
-                await deleteDoc(doc(db, `artifacts/${APP_ID}/users/${userId}/${collectionName}`, id));
+                await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/${collectionName}`, id));
                 showMessage("Item berhasil dihapus.");
             } catch (e) {
-                showMessage("Gagal menghapus item.");
-                console.error(e);
+                showMessage(`Gagal menghapus item: ${e.message}`);
+                console.error("Delete item error: ", e);
             }
         };
 
         const openStatusUpdateDialog = (id, type, currentStatus, subService) => {
             statusUpdateSelect.innerHTML = statusOptions.map(opt => `<option value="${opt}" ${opt === currentStatus ? 'selected' : ''}>${opt}</option>`).join('');
             statusUpdateCompletionDate.value = formatDate(new Date());
-            statusUpdateCompletionDateContainer.classList.toggle('hidden-dialog', currentStatus !== 'Selesai');
+            statusUpdateCompletionDateContainer.classList.toggle('hidden-dialog', statusUpdateSelect.value !== 'Selesai');
             
             statusUpdateSelect.onchange = () => {
                 statusUpdateCompletionDateContainer.classList.toggle('hidden-dialog', statusUpdateSelect.value !== 'Selesai');
             };
 
             statusUpdateDialog.classList.remove('hidden-dialog');
-            statusUpdateDialog.classList.add('flex');
+            statusUpdateDialog.classList.add('flex', 'items-center', 'justify-center');
             
-            // Handle confirmation
             const newConfirmBtn = statusUpdateConfirmBtn.cloneNode(true);
             statusUpdateConfirmBtn.parentNode.replaceChild(newConfirmBtn, statusUpdateConfirmBtn);
             newConfirmBtn.addEventListener('click', () => {
                 handleStatusUpdate(id, type, subService);
-            });
+            }, { once: true });
         };
 
         const handleStatusUpdate = async (id, type, subService) => {
             const newStatus = statusUpdateSelect.value;
             const completionDate = newStatus === 'Selesai' ? statusUpdateCompletionDate.value : null;
-            let fieldsToUpdate = { status: newStatus, completionDate };
+            let fieldsToUpdate = {};
             let collectionName = '';
             
             try {
                 if (type === 'complaint') {
                     collectionName = 'complaints';
+                    fieldsToUpdate = { status: newStatus, completionDate };
                 } else if (type === 'issue') {
                     collectionName = 'issues';
+                    fieldsToUpdate = { status: newStatus, completionDate };
                 } else if (type === 'sla' && subService) {
                     collectionName = 'slaRecords';
                     const record = allSlaRecords.find(r => r.id === id);
+                    if (!record) throw new Error("Data SLA tidak ditemukan.");
                     const updatedSubService = { ...record[subService], status: newStatus, completionDate };
                     fieldsToUpdate = { [subService]: updatedSubService };
+                } else {
+                    throw new Error("Tipe pembaruan tidak valid.");
                 }
                 
-                const itemRef = doc(db, `artifacts/${APP_ID}/users/${userId}/${collectionName}`, id);
+                const itemRef = doc(db, `artifacts/${appId}/users/${userId}/${collectionName}`, id);
                 await updateDoc(itemRef, fieldsToUpdate);
                 showMessage("Status berhasil diperbarui.");
             } catch (e) {
-                showMessage("Gagal memperbarui status.");
-                console.error(e);
+                showMessage(`Gagal memperbarui status: ${e.message}`);
+                console.error("Update status error: ", e);
             } finally {
                 statusUpdateDialog.classList.add('hidden-dialog');
-                statusUpdateDialog.classList.remove('flex');
+                statusUpdateDialog.classList.remove('flex', 'items-center', 'justify-center');
             }
         };
 
@@ -1105,7 +1111,11 @@
             const filteredSla = slaPeriodFilter === 'Semua Periode' ? allSlaRecords : allSlaRecords.filter(s => s.reportingPeriod === slaPeriodFilter);
             const filteredIssues = issuePeriodFilter === 'Semua Periode' ? allIssues : allIssues.filter(i => i.reportingPeriod === issuePeriodFilter);
             const filteredInfo = infoTambahanPeriodFilter === 'Semua Periode' ? allInfoTambahan : allInfoTambahan.filter(i => i.reportingPeriod === infoTambahanPeriodFilter);
-            
+
+            if (filteredComplaints.length === 0 && filteredSla.length === 0 && filteredIssues.length === 0 && filteredInfo.length === 0) {
+                 return showMessage("Tidak ada data untuk diekspor pada filter yang dipilih.");
+            }
+
             let tableHtml = `
                 <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
                 <head>
@@ -1125,57 +1135,48 @@
                     <style>
                         table, th, td { border: 1px solid black; border-collapse: collapse; }
                         th, td { padding: 5px; text-align: left; vertical-align: top; }
-                        th { background-color: #f2f2f2; }
+                        th { background-color: #f2f2f2; font-weight: bold; }
                         h2 { font-size: 16px; font-weight: bold; }
-                        .pre-wrap { white-space: pre-wrap; }
                     </style>
                 </head>
                 <body>
             `;
             
-            // Complaints
             if (filteredComplaints.length > 0) {
-                tableHtml += `<h2>Laporan Komplain - Periode: ${complaintPeriodFilter}</h2><table><thead><tr><th>Cabang</th><th>Judul</th><th>Deskripsi</th><th>Penanganan</th><th>Status</th><th>Tgl Selesai</th><th>Periode</th></tr></thead><tbody>`;
+                tableHtml += `<h2>Laporan Komplain - Periode: ${complaintPeriodFilter}</h2><table><thead><tr><th>Cabang</th><th>Periode</th><th>Judul</th><th>Deskripsi</th><th>Penanganan</th><th>Status</th><th>Tgl Selesai</th></tr></thead><tbody>`;
                 filteredComplaints.forEach(c => {
-                    tableHtml += `<tr><td>${c.branch || ''}</td><td>${c.title || ''}</td><td>${c.description || ''}</td><td>${c.handling || ''}</td><td>${c.status || ''}</td><td>${c.completionDate || ''}</td><td>${c.reportingPeriod || ''}</td></tr>`;
+                    tableHtml += `<tr><td>${c.branch || ''}</td><td>${c.reportingPeriod || ''}</td><td>${c.title || ''}</td><td>${c.description || ''}</td><td>${c.handling || ''}</td><td>${c.status || ''}</td><td>${c.completionDate || ''}</td></tr>`;
                 });
                 tableHtml += '</tbody></table><br/>';
             }
             
-            // SLA
             if (filteredSla.length > 0) {
                 tableHtml += `<h2>Laporan SLA - Periode: ${slaPeriodFilter}</h2><table><thead><tr><th>Cabang</th><th>Periode</th><th>On Clinic Sesuai</th><th>On Clinic Tdk Sesuai</th><th>On Clinic Penyebab</th><th>On Clinic Penanganan</th><th>On Clinic Status</th><th>On Site Sesuai</th><th>On Site Tdk Sesuai</th><th>On Site Penyebab</th><th>On Site Penanganan</th><th>On Site Status</th></tr></thead><tbody>`;
                 filteredSla.forEach(s => {
-                    tableHtml += `<tr><td>${s.branch || ''}</td><td>${s.reportingPeriod || ''}</td><td>${s.onClinic.jumlahSesuai}</td><td>${s.onClinic.jumlahTidakSesuai}</td><td>${s.onClinic.penyebab || ''}</td><td>${s.onClinic.penanganan || ''}</td><td>${s.onClinic.status || ''}</td><td>${s.onSite.jumlahSesuai}</td><td>${s.onSite.jumlahTidakSesuai}</td><td>${s.onSite.penyebab || ''}</td><td>${s.onSite.penanganan || ''}</td><td>${s.onSite.status || ''}</td></tr>`;
+                    tableHtml += `<tr><td>${s.branch || ''}</td><td>${s.reportingPeriod || ''}</td><td>${s.onClinic?.jumlahSesuai || 0}</td><td>${s.onClinic?.jumlahTidakSesuai || 0}</td><td>${s.onClinic?.penyebab || ''}</td><td>${s.onClinic?.penanganan || ''}</td><td>${s.onClinic?.status || ''}</td><td>${s.onSite?.jumlahSesuai || 0}</td><td>${s.onSite?.jumlahTidakSesuai || 0}</td><td>${s.onSite?.penyebab || ''}</td><td>${s.onSite?.penanganan || ''}</td><td>${s.onSite?.status || ''}</td></tr>`;
                 });
                 tableHtml += '</tbody></table><br/>';
             }
             
-            // Issues
             if (filteredIssues.length > 0) {
-                tableHtml += `<h2>Laporan Isu - Periode: ${issuePeriodFilter}</h2><table><thead><tr><th>Cabang</th><th>Deskripsi</th><th>Dukungan</th><th>Status</th><th>Tgl Selesai</th><th>Periode</th></tr></thead><tbody>`;
+                tableHtml += `<h2>Laporan Isu - Periode: ${issuePeriodFilter}</h2><table><thead><tr><th>Cabang</th><th>Periode</th><th>Deskripsi</th><th>Dukungan</th><th>Status</th><th>Tgl Selesai</th></tr></thead><tbody>`;
                 filteredIssues.forEach(i => {
-                    tableHtml += `<tr><td>${i.branch || ''}</td><td>${i.issueDescription || ''}</td><td>${i.supportRequest || ''}</td><td>${i.status || ''}</td><td>${i.completionDate || ''}</td><td>${i.reportingPeriod || ''}</td></tr>`;
+                    tableHtml += `<tr><td>${i.branch || ''}</td><td>${i.reportingPeriod || ''}</td><td>${i.issueDescription || ''}</td><td>${i.supportRequest || ''}</td><td>${i.status || ''}</td><td>${i.completionDate || ''}</td></tr>`;
                 });
                 tableHtml += '</tbody></table><br/>';
             }
 
-            // Info
             if (filteredInfo.length > 0) {
-                tableHtml += `<h2>Laporan Info Tambahan - Periode: ${infoTambahanPeriodFilter}</h2><table><thead><tr><th>Cabang</th><th>Info</th><th>Periode</th></tr></thead><tbody>`;
+                tableHtml += `<h2>Laporan Info Tambahan - Periode: ${infoTambahanPeriodFilter}</h2><table><thead><tr><th>Cabang</th><th>Periode</th><th>Info</th></tr></thead><tbody>`;
                 filteredInfo.forEach(info => {
                     const formattedInfo = (info.info || '').replace(/\n/g, '<br/>');
-                    tableHtml += `<tr><td>${info.branch || ''}</td><td>${formattedInfo}</td><td>${info.reportingPeriod || ''}</td></tr>`;
+                    tableHtml += `<tr><td>${info.branch || ''}</td><td>${info.reportingPeriod || ''}</td><td>${formattedInfo}</td></tr>`;
                 });
                 tableHtml += '</tbody></table>';
             }
 
             tableHtml += '</body></html>';
             
-            if (tableHtml.length < 500) { // Increased threshold to account for header
-                return showMessage("Tidak ada data untuk diekspor.");
-            }
-
             const blob = new Blob([tableHtml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
@@ -1205,11 +1206,9 @@
         };
 
         // --- INITIALIZATION ---
-        const init = () => {
+        const init = async () => {
             try {
                 // ▼▼▼ DAFTAR EMAIL YANG DIIZINKAN (GANTI DENGAN EMAIL ANDA) ▼▼▼
-                // Hapus email placeholder di bawah dan ganti dengan alamat email Google
-                // yang Anda izinkan untuk mengakses aplikasi ini.
                 const authorizedEmails = [
                     "muhherman226@gmail.com",
                     "afm.firmansyahagung@gmail.com",
@@ -1220,39 +1219,32 @@
                 ];
                 // ▲▲▲ AKHIR DARI DAFTAR EMAIL ▲▲▲
 
-                // =======================================================================
-                // ▼▼▼ KONFIGURASI FIREBASE ▼▼▼
-                // =======================================================================
-                const firebaseConfigPlaceholder = {
-                    apiKey: "AIzaSyCRNTafMklQKHd4M25nAcs-ZLTK0UxvuGE",
-                    authDomain: "myreport-9e7e6.firebaseapp.com",
-                    projectId: "myreport-9e7e6",
-                    storageBucket: "myreport-9e7e6.firebasestorage.app",
-                    messagingSenderId: "1006939537070",
-                    appId: "1:1006939537070:web:d1863128a9507491b0b73f"
-                };
-                
                 const firebaseConfig = typeof __firebase_config !== 'undefined' 
                     ? JSON.parse(__firebase_config) 
-                    : firebaseConfigPlaceholder;
+                    : {
+                        apiKey: "AIzaSyCRNTafMklQKHd4M25nAcs-ZLTK0UxvuGE",
+                        authDomain: "myreport-9e7e6.firebaseapp.com",
+                        projectId: "myreport-9e7e6",
+                        storageBucket: "myreport-9e7e6.appspot.com",
+                        messagingSenderId: "1006939537070",
+                        appId: "1:1006939537070:web:d1863128a9507491b0b73f"
+                      };
 
-                if (!firebaseConfig.apiKey || firebaseConfig.apiKey.startsWith("GANTI_DENGAN")) {
-                    throw new Error("Konfigurasi Firebase tidak valid. Ganti nilai placeholder di dalam kode dengan kredensial proyek Firebase Anda.");
+                if (!firebaseConfig.apiKey || firebaseConfig.apiKey.includes("GANTI")) {
+                    throw new Error("Konfigurasi Firebase tidak valid. Ganti nilai placeholder di dalam kode.");
                 }
-                // =======================================================================
-                // ▲▲▲ AKHIR DARI BAGIAN KONFIGURASI FIREBASE ▲▲▲
-                // =======================================================================
 
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
+                setLogLevel('error'); 
+
+                await setPersistence(auth, browserLocalPersistence);
 
                 onAuthStateChanged(auth, (user) => {
                     loadingIndicator.style.display = 'none';
                     if (user) {
-                        // User is signed in, check if they are authorized
                         if (authorizedEmails.includes(user.email)) {
-                            // USER IS AUTHORIZED
                             userId = user.uid;
                             userName.textContent = user.displayName;
                             userEmail.textContent = user.email;
@@ -1268,35 +1260,31 @@
                             renderForms();
                             addDisplayEventListeners();
                         } else {
-                            // USER IS NOT AUTHORIZED
-                            errorMessage.textContent = `Akses Ditolak. Akun Anda (${user.email}) tidak memiliki izin untuk mengakses aplikasi ini.`;
+                            errorMessage.textContent = `Akses Ditolak. Akun Anda (${user.email}) tidak memiliki izin.`;
                             errorDisplay.classList.remove('hidden-dialog');
-                            errorDisplay.classList.add('flex');
+                            errorDisplay.classList.add('flex', 'items-center', 'justify-center');
                             mainContent.classList.add('hidden');
                             loginScreen.classList.add('hidden-dialog');
                             loginScreen.classList.remove('flex');
-                            // Automatically sign them out
                             handleSignOut();
                         }
                     } else {
-                        // User is signed out
                         userId = null;
                         mainContent.classList.add('hidden');
                         userInfo.classList.add('hidden-dialog');
                         userInfo.classList.remove('flex');
                         loginScreen.classList.remove('hidden-dialog');
                         loginScreen.classList.add('flex');
-                        errorDisplay.classList.add('hidden-dialog'); // Hide error on sign out
+                        errorDisplay.classList.add('hidden-dialog');
                         errorDisplay.classList.remove('flex');
 
-                        // Clean up old data and listeners
                         firestoreUnsubscribes.forEach(unsub => unsub());
                         firestoreUnsubscribes = [];
                         allComplaints = [];
                         allSlaRecords = [];
                         allIssues = [];
                         allInfoTambahan = [];
-                        renderAllTabs(); // Re-render tabs to show they are empty
+                        renderAllTabs();
                     }
                 });
 
@@ -1304,11 +1292,10 @@
                 loadingIndicator.style.display = 'none';
                 errorMessage.textContent = `Gagal inisialisasi: ${e.message}`;
                 errorDisplay.classList.remove('hidden-dialog');
-                errorDisplay.classList.add('flex');
-                console.error(e);
+                errorDisplay.classList.add('flex', 'items-center', 'justify-center');
+                console.error("Initialization error:", e);
             }
             
-            // Tab switching logic
             document.getElementById('tabs-container').addEventListener('click', (e) => {
                 if (e.target.matches('.tab-btn')) {
                     activeTab = e.target.dataset.tab;
@@ -1327,53 +1314,41 @@
                 }
             });
 
-            // Dialog and Auth button listeners
             messageDialogOkBtn.addEventListener('click', hideMessage);
             confirmationDialogCancelBtn.addEventListener('click', hideConfirmation);
             statusUpdateCancelBtn.addEventListener('click', () => {
                 statusUpdateDialog.classList.add('hidden-dialog');
-                statusUpdateDialog.classList.remove('flex');
+                statusUpdateDialog.classList.remove('flex', 'items-center', 'justify-center');
             });
             document.getElementById('export-excel-btn').addEventListener('click', handleExportAllToExcel);
             googleSignInBtn.addEventListener('click', handleGoogleSignIn);
             signOutBtn.addEventListener('click', handleSignOut);
-
-            // Explicitly hide all dialogs on startup
-            messageDialog.classList.add('hidden-dialog');
-            messageDialog.classList.remove('flex');
-            confirmationDialog.classList.add('hidden-dialog');
-            confirmationDialog.classList.remove('flex');
-            statusUpdateDialog.classList.add('hidden-dialog');
-            statusUpdateDialog.classList.remove('flex');
         };
         
         const setupFirestoreListeners = () => {
-            // Clean up previous listeners before attaching new ones
             firestoreUnsubscribes.forEach(unsub => unsub());
             firestoreUnsubscribes = [];
 
-            const collections = ['complaints', 'slaRecords', 'issues', 'infoTambahan'];
-            const stateUpdaters = {
+            const collections = {
                 complaints: (data) => { allComplaints = data; renderComplaintsTab(); },
                 slaRecords: (data) => { allSlaRecords = data; renderSlaTab(); },
                 issues: (data) => { allIssues = data; renderIssuesTab(); },
                 infoTambahan: (data) => { allInfoTambahan = data; renderInfoTambahanTab(); }
             };
             
-            collections.forEach(name => {
-                const q = query(collection(db, `artifacts/${APP_ID}/users/${userId}/${name}`));
+            for (const name in collections) {
+                const q = query(collection(db, `artifacts/${appId}/users/${userId}/${name}`));
                 const unsubscribe = onSnapshot(q, (snapshot) => {
                     const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    stateUpdaters[name](data);
+                    collections[name](data);
                 }, (error) => {
                     console.error(`Error fetching ${name}:`, error);
-                    showMessage(`Gagal memuat data ${name}.`);
+                    showMessage(`Gagal memuat data untuk ${name}. Silakan refresh halaman.`);
                 });
-                firestoreUnsubscribes.push(unsubscribe); // Store the cleanup function
-            });
+                firestoreUnsubscribes.push(unsubscribe);
+            }
         };
 
-        // Start the application
         init();
 
     </script>
