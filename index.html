@@ -727,8 +727,26 @@
         };
         
         const init = async () => {
-            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "AIzaSyCRNTafMklQKHd4M25nAcs-ZLTK0UxvuGE", authDomain: "myreport-9e7e6.firebaseapp.com", projectId: "myreport-9e7e6" };
-            if (!firebaseConfig.apiKey) { errorMessage.textContent = "Konfigurasi Firebase tidak valid."; showDialog(errorDisplay); return; }
+            // --- ▼▼▼ GANTI DENGAN KONFIGURASI FIREBASE ANDA ▼▼▼ ---
+            // Salin konfigurasi proyek Firebase Anda di sini.
+            // Anda bisa mendapatkannya dari Pengaturan Proyek > Umum > Aplikasi Anda > Firebase SDK snippet (Config).
+            const firebaseConfigPlaceholder = {
+                apiKey: "AIzaSyCRNTafMklQKHd4M25nAcs-ZLTK0UxvuGE",
+                authDomain: "myreport-9e7e6.firebaseapp.com",
+                projectId: "myreport-9e7e6",
+                storageBucket: "myreport-9e7e6.firebasestorage.app",
+                messagingSenderId: "1006939537070",
+                appId: "1:1006939537070:web:d1863128a9507491b0b73f"
+            };
+            // --- ▲▲▲ AKHIR DARI BAGIAN KONFIGURASI ▲▲▲ ---
+
+            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : firebaseConfigPlaceholder;
+            
+            if (!firebaseConfig.apiKey || firebaseConfig.apiKey.startsWith("GANTI_DENGAN")) { 
+                errorMessage.textContent = "Konfigurasi Firebase tidak valid. Harap ganti nilai placeholder di dalam kode dengan kredensial proyek Firebase Anda."; 
+                showDialog(errorDisplay); 
+                return; 
+            }
             try {
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
@@ -800,5 +818,6 @@
     </script>
 </body>
 </html>
+
 
 
