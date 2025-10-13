@@ -436,8 +436,10 @@
                                 <div class="data-label mb-1">On Clinic</div>
                                 <div class="text-sm">Total: ${s.onClinic.totalLayanan} | Sesuai: ${s.onClinic.jumlahSesuai} | Tdk Sesuai: ${s.onClinic.jumlahTidakSesuai}</div>
                                 <div class="text-sm mt-1"><span class="font-semibold">Status:</span> ${getStatusDisplay(s.onClinic)}</div>
+                                ${Number(s.onClinic.jumlahTidakSesuai) > 0 ? `
                                 <div class="text-xs text-gray-600 mt-2"><span class="font-semibold">Penyebab:</span> ${s.onClinic.penyebab || '-'}</div>
                                 <div class="text-xs text-gray-600"><span class="font-semibold">Penanganan:</span> ${s.onClinic.penanganan || '-'}</div>
+                                ` : ''}
                            </td>
                            <td class="px-6 py-4 align-middle" rowspan="2">
                                 <div class="flex flex-col gap-2">
@@ -452,8 +454,10 @@
                                 <div class="data-label mb-1">On Site</div>
                                 <div class="text-sm">Total: ${s.onSite.totalLayanan} | Sesuai: ${s.onSite.jumlahSesuai} | Tdk Sesuai: ${s.onSite.jumlahTidakSesuai}</div>
                                 <div class="text-sm mt-1"><span class="font-semibold">Status:</span> ${getStatusDisplay(s.onSite)}</div>
+                                ${Number(s.onSite.jumlahTidakSesuai) > 0 ? `
                                 <div class="text-xs text-gray-600 mt-2"><span class="font-semibold">Penyebab:</span> ${s.onSite.penyebab || '-'}</div>
                                 <div class="text-xs text-gray-600"><span class="font-semibold">Penanganan:</span> ${s.onSite.penanganan || '-'}</div>
+                                ` : ''}
                            </td>
                         </tr>
                     </tbody>
