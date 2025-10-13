@@ -729,7 +729,6 @@
         const init = async () => {
             // --- ▼▼▼ GANTI DENGAN KONFIGURASI FIREBASE ANDA ▼▼▼ ---
             // Salin konfigurasi proyek Firebase Anda di sini.
-            // Anda bisa mendapatkannya dari Pengaturan Proyek > Umum > Aplikasi Anda > Firebase SDK snippet (Config).
             const firebaseConfigPlaceholder = {
                 apiKey: "AIzaSyCRNTafMklQKHd4M25nAcs-ZLTK0UxvuGE",
                 authDomain: "myreport-9e7e6.firebaseapp.com",
@@ -739,6 +738,18 @@
                 appId: "1:1006939537070:web:d1863128a9507491b0b73f"
             };
             // --- ▲▲▲ AKHIR DARI BAGIAN KONFIGURASI ▲▲▲ ---
+
+            // --- ▼▼▼ DAFTAR EMAIL YANG DIIZINKAN BISA DIAKSES DI SINI ▼▼▼ ---
+            const authorizedEmails = [
+                "muhherman226@gmail.com",
+                "",
+                "ekonovidianto7@gmail.com",
+                "fati.imahss@gmail.com",
+                "kadeklestary@gmail.com",
+                "pekaktemplar@gmail.com"
+                // Tambahkan alamat email lain di sini jika perlu
+            ];
+             // --- ▲▲▲ AKHIR DARI DAFTAR EMAIL ▲▲▲ ---
 
             const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : firebaseConfigPlaceholder;
             
@@ -755,16 +766,26 @@
                 onAuthStateChanged(auth, (user) => {
                     loadingIndicator.style.display = 'none';
                     if (user && !user.isAnonymous) {
-                        userId = user.uid;
-                        userName.textContent = user.displayName || 'Pengguna';
-                        userEmail.textContent = user.email || '';
-                        if (user.photoURL) userPhoto.src = user.photoURL;
-                        hideDialog(loginScreen);
-                        mainContent.classList.remove('hidden');
-                        userInfo.style.display = 'flex';
-                        setupFirestoreListeners();
-                        renderForms();
-                        addDisplayEventListeners();
+                        // Cek apakah email pengguna ada di dalam daftar yang diizinkan
+                        if (authorizedEmails.includes(user.email)) {
+                            userId = user.uid;
+                            userName.textContent = user.displayName || 'Pengguna';
+                            userEmail.textContent = user.email || '';
+                            if (user.photoURL) userPhoto.src = user.photoURL;
+                            hideDialog(loginScreen);
+                            mainContent.classList.remove('hidden');
+                            userInfo.style.display = 'flex';
+                            setupFirestoreListeners();
+                            renderForms();
+                            addDisplayEventListeners();
+                        } else {
+                            // Jika email tidak terdaftar, tampilkan error dan logout
+                            errorMessage.textContent = `Akses Ditolak. Email Anda (${user.email}) tidak terdaftar.`;
+                            showDialog(errorDisplay);
+                            mainContent.classList.add('hidden');
+                            userInfo.style.display = 'none';
+                            signOut(auth); // Langsung logout pengguna
+                        }
                     } else {
                         userId = null;
                         mainContent.classList.add('hidden');
@@ -818,6 +839,7 @@
     </script>
 </body>
 </html>
+
 
 
 
