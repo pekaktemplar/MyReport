@@ -593,7 +593,8 @@
             if (!data) return showMessage("Harap lengkapi semua bidang yang wajib diisi.");
             try {
                 data.reportingPeriod = formatReportingPeriod(data.periodStartDate, data.periodEndDate);
-                await addDoc(collection(db, `artifacts/${appId}/users/${userId}/${collectionName}`), data);
+                // UBAH: Menyimpan ke koleksi publik
+                await addDoc(collection(db, `artifacts/${appId}/public/data/${collectionName}`), data);
                 showMessage("Data berhasil ditambahkan!");
                 renderForms();
             } catch (e) { showMessage(`Gagal: ${e.message}`); }
@@ -611,7 +612,11 @@
         const addInfoTambahan = () => addRecord('infoTambahan', getFormData('form-infoTambahan', [{key: 'branch', name: 'branch', required: true}, {key: 'info', name: 'info', required: true}, {key: 'periodStartDate', name: 'periodStartDate', required: true}, {key: 'periodEndDate', name: 'periodEndDate', required: true}]));
 
         const deleteItem = async (collectionName, id) => {
-            try { await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/${collectionName}`, id)); showMessage("Item berhasil dihapus."); }
+            try { 
+                // UBAH: Menghapus dari koleksi publik
+                await deleteDoc(doc(db, `artifacts/${appId}/public/data/${collectionName}`, id)); 
+                showMessage("Item berhasil dihapus."); 
+            }
             catch (e) { showMessage(`Gagal menghapus: ${e.message}`); }
         };
         const openStatusUpdateDialog = (id, type, currentStatus, subService) => {
@@ -639,7 +644,8 @@
                 fieldsToUpdate = { status: newStatus, completionDate };
             }
             try {
-                await updateDoc(doc(db, `artifacts/${appId}/users/${userId}/${collectionName}`, id), fieldsToUpdate);
+                // UBAH: Memperbarui di koleksi publik
+                await updateDoc(doc(db, `artifacts/${appId}/public/data/${collectionName}`, id), fieldsToUpdate);
                 showMessage("Status berhasil diperbarui.");
             } catch (e) { showMessage(`Gagal memperbarui: ${e.message}`); }
             finally { hideDialog(statusUpdateDialog); }
@@ -680,7 +686,8 @@
                 infoTambahan: (data) => allInfoTambahan = data,
             };
             for (const name in collections) {
-                const q = query(collection(db, `artifacts/${appId}/users/${userId}/${name}`));
+                // UBAH: Mengambil data dari koleksi publik
+                const q = query(collection(db, `artifacts/${appId}/public/data/${name}`));
                 const unsub = onSnapshot(q, (snapshot) => {
                     collections[name](snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
                     renderAllTabs();
@@ -742,12 +749,11 @@
             // --- ▼▼▼ DAFTAR EMAIL YANG DIIZINKAN BISA DIAKSES DI SINI ▼▼▼ ---
             const authorizedEmails = [
                 "muhherman226@gmail.com",
-                "dr.dwikartikasarimmr@gmail.com",
+                "",
                 "ekonovidianto7@gmail.com",
                 "fati.imahss@gmail.com",
                 "kadeklestary@gmail.com",
-                "pekaktemplar@gmail.com",
-                "tmcsemarang1@gmail.com"
+                "pekaktemplar@gmail.com"
                 // Tambahkan alamat email lain di sini jika perlu
             ];
              // --- ▲▲▲ AKHIR DARI DAFTAR EMAIL ▲▲▲ ---
@@ -840,7 +846,6 @@
     </script>
 </body>
 </html>
-
 
 
 
