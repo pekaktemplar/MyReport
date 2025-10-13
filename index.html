@@ -20,6 +20,7 @@
         /* Apply the Inter font to the whole application */
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #eaf1ed; /* Main background color */
         }
         /* Custom styles for better visual appeal and to hide elements */
         .hidden-dialog {
@@ -31,23 +32,80 @@
             min-height: 250px;
             width: 100%;
         }
+        
+        /* Animation Keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes scaleUp {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .dialog-content {
+            animation: scaleUp 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+        }
+
+        .dialog-backdrop {
+            animation: fadeIn 0.2s ease-out forwards;
+        }
+
+        /* Custom button styles */
+        .btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-primary {
+            background-color: #154887;
+            color: #fefdfc;
+        }
+        .btn-primary:hover {
+            background-color: #194e91;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .btn-secondary {
+            background-color: #b68103;
+            color: #fefdfc;
+        }
+        .btn-secondary:hover {
+            background-color: #d0ad5f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .btn-danger {
+            background-color: #ee2228;
+            color: #fefdfc;
+        }
+        .btn-danger:hover {
+            background-color: #c0171d;
+            transform: translateY(-2px);
+        }
+        .btn-neutral {
+            background-color: #e9d9b0;
+            color: #154887;
+        }
+        .btn-neutral:hover {
+            background-color: #d0ad5f;
+        }
     </style>
 </head>
-<body class="bg-gradient-to-br from-indigo-50 to-purple-100 font-sans text-gray-800 p-4 sm:p-6 md:p-8">
+<body class="text-gray-800 p-4 sm:p-6 md:p-8">
 
     <!-- Main Application Container -->
     <div id="app-container">
         <!-- Loading State -->
         <div id="loading-indicator" class="flex items-center justify-center min-h-screen">
-            <div class="text-xl font-semibold text-gray-700">Mengautentikasi & Memuat Data...</div>
+            <div class="text-xl font-semibold text-[#154887]">Mengautentikasi & Memuat Data...</div>
         </div>
 
         <!-- Login Screen -->
-        <div id="login-screen" class="hidden-dialog items-center justify-center min-h-screen">
-            <div class="bg-white p-8 rounded-xl shadow-lg text-center max-w-sm w-full">
-                <h1 class="text-3xl font-bold text-indigo-800 mb-2">MyReport</h1>
+        <div id="login-screen" class="hidden-dialog fixed inset-0">
+             <div class="dialog-backdrop absolute inset-0 bg-gray-900 bg-opacity-50"></div>
+            <div class="dialog-content relative bg-[#fefdfc] p-8 rounded-xl shadow-2xl text-center max-w-sm w-full mx-4">
+                <h1 class="text-3xl font-bold text-[#154887] mb-2">MyReport</h1>
                 <p class="text-gray-600 mb-6">Autentikasi diperlukan untuk melanjutkan.</p>
-                <button id="google-signin-btn" class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 flex items-center justify-center gap-3">
+                <button id="google-signin-btn" class="w-full bg-[#32629d] text-white py-3 px-4 rounded-lg hover:bg-[#194e91] focus:outline-none focus:ring-2 focus:ring-[#d0ad5f] focus:ring-offset-2 transition-all duration-300 flex items-center justify-center gap-3 btn">
                     <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.19 4.223-4.243 5.571l6.252 5.218C41.91 35.778 44 30.551 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
                     Sign in with Google
                 </button>
@@ -62,38 +120,44 @@
         <!-- Main Application Content (hidden until loaded) -->
         <div id="main-content" class="hidden">
             <!-- Header -->
-            <header class="bg-white shadow-lg rounded-xl p-4 mb-8 flex flex-col sm:flex-row items-center justify-between">
-                <h1 class="text-3xl font-bold text-indigo-800 mb-2 sm:mb-0">MyReport</h1>
+            <header class="bg-[#fefdfc] shadow-lg rounded-xl p-4 mb-8 flex flex-col sm:flex-row items-center justify-between">
+                <h1 class="text-3xl font-bold text-[#154887] mb-2 sm:mb-0">MyReport</h1>
                 <div class="flex flex-col sm:flex-row items-center gap-4">
                     <div id="user-info" class="hidden-dialog items-center gap-3">
                         <img id="user-photo" class="w-10 h-10 rounded-full" src="https://placehold.co/40x40/EBF4FF/7F9CF5?text=U" alt="User Photo">
                         <div class="text-sm text-center sm:text-left">
-                            <span id="user-name" class="font-semibold text-gray-800"></span>
+                            <span id="user-name" class="font-semibold text-[#154887]"></span>
                             <span id="user-email" class="text-gray-500 block"></span>
                         </div>
-                        <button id="signout-btn" class="ml-4 bg-red-500 text-white py-2 px-3 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-200 text-sm">Sign Out</button>
+                        <button id="signout-btn" class="ml-4 py-2 px-3 rounded-lg text-sm btn btn-danger">Sign Out</button>
                     </div>
-                    <button id="export-excel-btn" class="mt-4 sm:mt-0 bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-200 flex items-center justify-center gap-2">
+                    <button id="export-excel-btn" class="mt-4 sm:mt-0 py-2 px-4 rounded-lg flex items-center justify-center gap-2 btn btn-secondary">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
                         </svg>
-                        Export Semua Data ke Excel
+                        Export Semua Data
                     </button>
                  </div>
             </header>
 
             <!-- Navigation Tabs -->
-            <nav id="tabs-container" class="mb-8 bg-white shadow-md rounded-xl p-2 flex flex-wrap justify-center gap-2 sm:gap-4">
-                <button data-tab="komplain" class="tab-btn px-4 py-2 rounded-lg font-medium transition-all duration-200 bg-indigo-600 text-white shadow-md">Komplain</button>
-                <button data-tab="sla" class="tab-btn px-4 py-2 rounded-lg font-medium transition-all duration-200 text-indigo-700 hover:bg-indigo-100">SLA & Kinerja</button>
-                <button data-tab="isu" class="tab-btn px-4 py-2 rounded-lg font-medium transition-all duration-200 text-indigo-700 hover:bg-indigo-100">Isu & Dukungan</button>
-                <button data-tab="infoTambahan" class="tab-btn px-4 py-2 rounded-lg font-medium transition-all duration-200 text-indigo-700 hover:bg-indigo-100">Info Tambahan</button>
+            <nav id="tabs-container" class="mb-8 bg-[#fefdfc] shadow-md rounded-xl p-2 flex flex-wrap justify-center gap-2 sm:gap-4">
+                <button data-tab="komplain" class="tab-btn px-4 py-2 rounded-lg font-medium transition-all duration-300 bg-[#154887] text-[#fefdfc] shadow-md">Komplain</button>
+                <button data-tab="sla" class="tab-btn px-4 py-2 rounded-lg font-medium transition-all duration-300 text-[#154887] hover:bg-[#e9d9b0]">SLA & Kinerja</button>
+                <button data-tab="isu" class="tab-btn px-4 py-2 rounded-lg font-medium transition-all duration-300 text-[#154887] hover:bg-[#e9d9b0]">Isu & Dukungan</button>
+                <button data-tab="infoTambahan" class="tab-btn px-4 py-2 rounded-lg font-medium transition-all duration-300 text-[#154887] hover:bg-[#e9d9b0]">Info Tambahan</button>
             </nav>
+
+            <!-- View Switcher -->
+            <div class="mb-6 flex justify-center items-center bg-[#fefdfc] shadow-md rounded-xl p-2 gap-2 max-w-xs mx-auto">
+                <button id="view-input-btn" class="w-1/2 px-4 py-2 rounded-lg font-medium transition-all duration-300 bg-[#154887] text-[#fefdfc]">Input Data</button>
+                <button id="view-dashboard-btn" class="w-1/2 px-4 py-2 rounded-lg font-medium transition-all duration-300 text-[#154887] hover:bg-[#e9d9b0]">Dashboard</button>
+            </div>
 
             <!-- Main Content Area -->
             <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Input Forms Column -->
-                <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                <div id="input-column" class="lg:col-span-1 bg-[#fefdfc] p-6 rounded-xl shadow-lg border border-[#e9d9b0] transition-all duration-300">
                     <div id="form-komplain" class="tab-content"></div>
                     <div id="form-sla" class="tab-content hidden-dialog"></div>
                     <div id="form-isu" class="tab-content hidden-dialog"></div>
@@ -101,46 +165,49 @@
                 </div>
 
                 <!-- Display List Column -->
-                <div class="lg:col-span-2">
-                    <div id="display-komplain" class="tab-content bg-white p-6 rounded-xl shadow-lg border border-gray-200"></div>
-                    <div id="display-sla" class="tab-content hidden-dialog bg-white p-6 rounded-xl shadow-lg border border-gray-200"></div>
-                    <div id="display-isu" class="tab-content hidden-dialog bg-white p-6 rounded-xl shadow-lg border border-gray-200"></div>
-                    <div id="display-infoTambahan" class="tab-content hidden-dialog bg-white p-6 rounded-xl shadow-lg border border-gray-200"></div>
+                <div id="display-column" class="lg:col-span-2 transition-all duration-300">
+                    <div id="display-komplain" class="tab-content bg-[#fefdfc] p-6 rounded-xl shadow-lg border border-[#e9d9b0]"></div>
+                    <div id="display-sla" class="tab-content hidden-dialog bg-[#fefdfc] p-6 rounded-xl shadow-lg border border-[#e9d9b0]"></div>
+                    <div id="display-isu" class="tab-content hidden-dialog bg-[#fefdfc] p-6 rounded-xl shadow-lg border border-[#e9d9b0]"></div>
+                    <div id="display-infoTambahan" class="tab-content hidden-dialog bg-[#fefdfc] p-6 rounded-xl shadow-lg border border-[#e9d9b0]"></div>
                 </div>
             </main>
         </div>
     </div>
 
     <!-- Dialogs -->
-    <div id="message-dialog" class="hidden-dialog fixed inset-0 bg-gray-600 bg-opacity-50 p-4 z-50">
-        <div class="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
+    <div id="message-dialog" class="hidden-dialog fixed inset-0 z-50">
+        <div class="dialog-backdrop absolute inset-0 bg-gray-900 bg-opacity-60"></div>
+        <div class="dialog-content relative bg-[#fefdfc] rounded-lg shadow-xl p-6 max-w-sm w-full mx-4">
             <p id="message-dialog-content" class="text-lg font-medium text-gray-800 mb-4"></p>
-            <button id="message-dialog-ok-btn" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700">OK</button>
+            <button id="message-dialog-ok-btn" class="w-full py-2 px-4 rounded-lg btn btn-primary">OK</button>
         </div>
     </div>
-    <div id="confirmation-dialog" class="hidden-dialog fixed inset-0 bg-gray-600 bg-opacity-50 p-4 z-50">
-        <div class="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
+    <div id="confirmation-dialog" class="hidden-dialog fixed inset-0 z-50">
+        <div class="dialog-backdrop absolute inset-0 bg-gray-900 bg-opacity-60"></div>
+        <div class="dialog-content relative bg-[#fefdfc] rounded-lg shadow-xl p-6 max-w-sm w-full mx-4">
             <p id="confirmation-dialog-content" class="text-lg font-medium text-gray-800 mb-4"></p>
             <div class="flex justify-end gap-3">
-                <button id="confirmation-dialog-cancel-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Batal</button>
-                <button id="confirmation-dialog-confirm-btn" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Konfirmasi</button>
+                <button id="confirmation-dialog-cancel-btn" class="px-4 py-2 rounded-lg btn btn-neutral">Batal</button>
+                <button id="confirmation-dialog-confirm-btn" class="px-4 py-2 rounded-lg btn btn-danger">Konfirmasi</button>
             </div>
         </div>
     </div>
-    <div id="status-update-dialog" class="hidden-dialog fixed inset-0 bg-gray-600 bg-opacity-50 p-4 z-50">
-        <div class="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4">Ubah Status</h3>
+    <div id="status-update-dialog" class="hidden-dialog fixed inset-0 z-50">
+        <div class="dialog-backdrop absolute inset-0 bg-gray-900 bg-opacity-60"></div>
+        <div class="dialog-content relative bg-[#fefdfc] rounded-lg shadow-xl p-6 max-w-sm w-full mx-4">
+            <h3 class="text-xl font-semibold text-[#154887] mb-4">Ubah Status</h3>
             <div class="mb-4">
                 <label for="status-update-select" class="block text-sm font-medium text-gray-700 mb-1">Pilih Status Baru</label>
-                <select id="status-update-select" class="w-full p-2 border border-gray-300 rounded-md"></select>
+                <select id="status-update-select" class="w-full p-2 border border-[#d0ad5f] rounded-md focus:ring-2 focus:ring-[#b68103] focus:border-[#b68103]"></select>
             </div>
             <div id="status-update-completion-date-container" class="mb-4 hidden-dialog">
                 <label for="status-update-completion-date" class="block text-sm font-medium text-gray-700 mb-1">Tanggal Selesai</label>
-                <input type="date" id="status-update-completion-date" class="w-full p-2 border border-gray-300 rounded-md">
+                <input type="date" id="status-update-completion-date" class="w-full p-2 border border-[#d0ad5f] rounded-md focus:ring-2 focus:ring-[#b68103] focus:border-[#b68103]">
             </div>
             <div class="flex justify-end gap-3">
-                <button id="status-update-cancel-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Batal</button>
-                <button id="status-update-confirm-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Simpan</button>
+                <button id="status-update-cancel-btn" class="px-4 py-2 rounded-lg btn btn-neutral">Batal</button>
+                <button id="status-update-confirm-btn" class="px-4 py-2 rounded-lg btn btn-primary">Simpan</button>
             </div>
         </div>
     </div>
@@ -155,6 +222,7 @@
         let db, auth;
         let userId = null;
         let activeTab = 'komplain';
+        let currentView = 'input';
         let firestoreUnsubscribes = [];
         let allComplaints = [], allSlaRecords = [], allIssues = [], allInfoTambahan = [];
         let complaintPeriodFilter = 'Semua Periode', slaPeriodFilter = 'Semua Periode', issuePeriodFilter = 'Semua Periode', infoTambahanPeriodFilter = 'Semua Periode';
@@ -163,7 +231,7 @@
         let complaintsStatusChart, complaintsBranchChart, slaComplianceChart, slaStatusChart, slaBranchChart, issuesStatusChart, issuesBranchChart;
         const branches = ['Mataram', 'Maluk', 'Bali', 'Surabaya', 'Yogyakarta', 'Semarang'];
         const statusOptions = ['Dalam Proses', 'Selesai'];
-        const chartColors = ['#8884d8', '#82ca9d', '#ffc658', '#FF8042', '#0088FE', '#00C49F'];
+        const chartColors = ['#32629d', '#82ca9d', '#e9d9b0', '#d0ad5f', '#194e91', '#b39058'];
 
         const loadingIndicator = document.getElementById('loading-indicator');
         const loginScreen = document.getElementById('login-screen');
@@ -237,7 +305,7 @@
             }
             inputEl.id = id;
             inputEl.name = name;
-            inputEl.className = "w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500";
+            inputEl.className = "w-full p-2 border border-[#d0ad5f] rounded-md focus:ring-2 focus:ring-[#b68103] focus:border-[#b68103] transition-colors duration-200";
             if (options.readOnly) { inputEl.readOnly = true; inputEl.classList.add('bg-gray-100'); }
             if (required) inputEl.required = true;
             wrapper.appendChild(inputEl);
@@ -252,15 +320,15 @@
                 ${createFormElement(`${prefix}PeriodEndDate`, 'periodEndDate', 'Akhir Periode', 'date', { value: period.endDate, required: true })}
                 ${createFormElement(`${prefix}ReportingPeriodDisplay`, 'reportingPeriodDisplay', 'Periode Pelaporan', 'text', { value: period.formattedPeriod, readOnly: true })}
             `;
-            document.getElementById('form-komplain').innerHTML = `<h2 class="text-2xl font-semibold mb-4 text-indigo-700">Tambah Komplain</h2><div class="space-y-4">${commonFields('comp')}${createFormElement('compTitle', 'title', 'Judul', 'text', { required: true })}${createFormElement('compDesc', 'description', 'Deskripsi', 'textarea', { required: true })}${createFormElement('compHandling', 'handling', 'Penanganan', 'textarea')}${createFormElement('compStatus', 'status', 'Status', 'select', { selectOptions: statusOptions, value: 'Dalam Proses' })}<button id="add-complaint-btn" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700">Tambah</button></div>`;
-            document.getElementById('form-sla').innerHTML = `<h2 class="text-2xl font-semibold mb-4 text-indigo-700">Tambah Catatan SLA</h2><div class="space-y-4">${commonFields('sla')}
-                <div class="bg-gray-100 p-4 rounded-lg space-y-2"><h3 class="text-lg font-semibold">On Clinic</h3>${createFormElement('onClinicTotalLayanan', 'onClinic.totalLayanan', 'Total Layanan', 'number', { value: 0 })}${createFormElement('onClinicJumlahSesuai', 'onClinic.jumlahSesuai', 'Jml Sesuai', 'number', { value: 0 })}${createFormElement('onClinicJumlahTidakSesuai', 'onClinic.jumlahTidakSesuai', 'Jml Tdk Sesuai', 'number', { value: 0 })}<div id="onClinic-conditional-fields" class="hidden-dialog space-y-2 mt-2">${createFormElement('onClinicPenyebab', 'onClinic.penyebab', 'Penyebab', 'textarea')}${createFormElement('onClinicPenanganan', 'onClinic.penanganan', 'Penanganan', 'textarea')}${createFormElement('onClinicStatus', 'onClinic.status', 'Status', 'select', { selectOptions: statusOptions, value: 'Dalam Proses' })}</div></div>
-                <div class="bg-gray-100 p-4 rounded-lg space-y-2"><h3 class="text-lg font-semibold">On Site</h3>${createFormElement('onSiteTotalLayanan', 'onSite.totalLayanan', 'Total Layanan', 'number', { value: 0 })}${createFormElement('onSiteJumlahSesuai', 'onSite.jumlahSesuai', 'Jml Sesuai', 'number', { value: 0 })}${createFormElement('onSiteJumlahTidakSesuai', 'onSite.jumlahTidakSesuai', 'Jml Tdk Sesuai', 'number', { value: 0 })}<div id="onSite-conditional-fields" class="hidden-dialog space-y-2 mt-2">${createFormElement('onSitePenyebab', 'onSite.penyebab', 'Penyebab', 'textarea')}${createFormElement('onSitePenanganan', 'onSite.penanganan', 'Penanganan', 'textarea')}${createFormElement('onSiteStatus', 'onSite.status', 'Status', 'select', { selectOptions: statusOptions, value: 'Dalam Proses' })}</div></div>
-                <button id="add-sla-btn" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700">Tambah</button></div>`;
-            document.getElementById('form-isu').innerHTML = `<h2 class="text-2xl font-semibold mb-4 text-indigo-700">Tambah Isu</h2><div class="space-y-4">${commonFields('issue')}
-                <div class="bg-gray-100 p-4 rounded-lg space-y-2"><h3 class="text-lg font-semibold">Detail</h3>${createFormElement('issueDesc', 'issueDescription', 'Deskripsi', 'textarea', { required: true })}${createFormElement('issueSupport', 'supportRequest', 'Dukungan', 'textarea', { required: true })}${createFormElement('issueStatus', 'status', 'Status', 'select', { selectOptions: statusOptions, value: 'Dalam Proses' })}</div>
-                <button id="add-issue-btn" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700">Tambah</button></div>`;
-            document.getElementById('form-infoTambahan').innerHTML = `<h2 class="text-2xl font-semibold mb-4 text-indigo-700">Tambah Info</h2><div class="space-y-4">${commonFields('info')}${createFormElement('infoField', 'info', 'Info', 'textarea', { rows: 5, value: '• ', required: true })}<button id="add-info-btn" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700">Tambah</button></div>`;
+            document.getElementById('form-komplain').innerHTML = `<h2 class="text-2xl font-semibold mb-4 text-[#154887]">Tambah Komplain</h2><div class="space-y-4">${commonFields('comp')}${createFormElement('compTitle', 'title', 'Judul', 'text', { required: true })}${createFormElement('compDesc', 'description', 'Deskripsi', 'textarea', { required: true })}${createFormElement('compHandling', 'handling', 'Penanganan', 'textarea')}${createFormElement('compStatus', 'status', 'Status', 'select', { selectOptions: statusOptions, value: 'Dalam Proses' })}<button id="add-complaint-btn" class="w-full py-2 rounded-lg btn btn-primary">Tambah</button></div>`;
+            document.getElementById('form-sla').innerHTML = `<h2 class="text-2xl font-semibold mb-4 text-[#154887]">Tambah Catatan SLA</h2><div class="space-y-4">${commonFields('sla')}
+                <div class="bg-[#eaf1ed] p-4 rounded-lg space-y-2"><h3 class="text-lg font-semibold text-[#154887]">On Clinic</h3>${createFormElement('onClinicTotalLayanan', 'onClinic.totalLayanan', 'Total Layanan', 'number', { value: 0 })}${createFormElement('onClinicJumlahSesuai', 'onClinic.jumlahSesuai', 'Jml Sesuai', 'number', { value: 0 })}${createFormElement('onClinicJumlahTidakSesuai', 'onClinic.jumlahTidakSesuai', 'Jml Tdk Sesuai', 'number', { value: 0 })}<div id="onClinic-conditional-fields" class="hidden-dialog space-y-2 mt-2">${createFormElement('onClinicPenyebab', 'onClinic.penyebab', 'Penyebab', 'textarea')}${createFormElement('onClinicPenanganan', 'onClinic.penanganan', 'Penanganan', 'textarea')}${createFormElement('onClinicStatus', 'onClinic.status', 'Status', 'select', { selectOptions: statusOptions, value: 'Dalam Proses' })}</div></div>
+                <div class="bg-[#eaf1ed] p-4 rounded-lg space-y-2"><h3 class="text-lg font-semibold text-[#154887]">On Site</h3>${createFormElement('onSiteTotalLayanan', 'onSite.totalLayanan', 'Total Layanan', 'number', { value: 0 })}${createFormElement('onSiteJumlahSesuai', 'onSite.jumlahSesuai', 'Jml Sesuai', 'number', { value: 0 })}${createFormElement('onSiteJumlahTidakSesuai', 'onSite.jumlahTidakSesuai', 'Jml Tdk Sesuai', 'number', { value: 0 })}<div id="onSite-conditional-fields" class="hidden-dialog space-y-2 mt-2">${createFormElement('onSitePenyebab', 'onSite.penyebab', 'Penyebab', 'textarea')}${createFormElement('onSitePenanganan', 'onSite.penanganan', 'Penanganan', 'textarea')}${createFormElement('onSiteStatus', 'onSite.status', 'Status', 'select', { selectOptions: statusOptions, value: 'Dalam Proses' })}</div></div>
+                <button id="add-sla-btn" class="w-full py-2 rounded-lg btn btn-primary">Tambah</button></div>`;
+            document.getElementById('form-isu').innerHTML = `<h2 class="text-2xl font-semibold mb-4 text-[#154887]">Tambah Isu</h2><div class="space-y-4">${commonFields('issue')}
+                <div class="bg-[#eaf1ed] p-4 rounded-lg space-y-2"><h3 class="text-lg font-semibold text-[#154887]">Detail</h3>${createFormElement('issueDesc', 'issueDescription', 'Deskripsi', 'textarea', { required: true })}${createFormElement('issueSupport', 'supportRequest', 'Dukungan', 'textarea', { required: true })}${createFormElement('issueStatus', 'status', 'Status', 'select', { selectOptions: statusOptions, value: 'Dalam Proses' })}</div>
+                <button id="add-issue-btn" class="w-full py-2 rounded-lg btn btn-primary">Tambah</button></div>`;
+            document.getElementById('form-infoTambahan').innerHTML = `<h2 class="text-2xl font-semibold mb-4 text-[#154887]">Tambah Info</h2><div class="space-y-4">${commonFields('info')}${createFormElement('infoField', 'info', 'Info', 'textarea', { rows: 5, value: '• ', required: true })}<button id="add-info-btn" class="w-full py-2 rounded-lg btn btn-primary">Tambah</button></div>`;
             addFormEventListeners();
         };
         const renderDisplayTab = (tabId, title, data, periodFilter, branchFilter, headers, rowRenderer, hasViz = false) => {
@@ -276,18 +344,18 @@
             }
 
             const showViz = tabId === 'komplain' ? showComplaintsViz : (tabId === 'sla' ? showSlaViz : showIssuesViz);
-            container.innerHTML = `<h2 class="text-2xl font-semibold mb-4 text-indigo-700">${title}</h2>
+            container.innerHTML = `<h2 class="text-2xl font-semibold mb-4 text-[#154887]">${title}</h2>
                 <div class="mb-4 flex flex-wrap items-center justify-between gap-4">
                     <div class="flex flex-wrap gap-4 items-center">
-                        <div class="flex items-center"><label for="${tabId}PeriodFilter" class="text-sm font-medium mr-2">Periode:</label><select id="${tabId}PeriodFilter" class="p-2 border rounded-md">${uniquePeriods.map(p => `<option value="${p}" ${p === periodFilter ? 'selected' : ''}>${p}</option>`).join('')}</select></div>
-                        <div class="flex items-center"><label for="${tabId}BranchFilter" class="text-sm font-medium mr-2">Cabang:</label><select id="${tabId}BranchFilter" class="p-2 border rounded-md"><option value="Semua Cabang">Semua Cabang</option>${branches.map(b => `<option value="${b}" ${b === branchFilter ? 'selected' : ''}>${b}</option>`).join('')}</select></div>
+                        <div class="flex items-center"><label for="${tabId}PeriodFilter" class="text-sm font-medium mr-2">Periode:</label><select id="${tabId}PeriodFilter" class="p-2 border border-[#d0ad5f] rounded-md focus:ring-[#b68103] focus:border-[#b68103]">${uniquePeriods.map(p => `<option value="${p}" ${p === periodFilter ? 'selected' : ''}>${p}</option>`).join('')}</select></div>
+                        <div class="flex items-center"><label for="${tabId}BranchFilter" class="text-sm font-medium mr-2">Cabang:</label><select id="${tabId}BranchFilter" class="p-2 border border-[#d0ad5f] rounded-md focus:ring-[#b68103] focus:border-[#b68103]"><option value="Semua Cabang">Semua Cabang</option>${branches.map(b => `<option value="${b}" ${b === branchFilter ? 'selected' : ''}>${b}</option>`).join('')}</select></div>
                     </div>
-                    ${hasViz ? `<button id="toggle-${tabId}-viz" class="px-3 py-2 text-sm bg-indigo-500 text-white rounded-md">${showViz ? 'Sembunyikan' : 'Tampilkan'} Visualisasi</button>` : ''}
+                    ${hasViz ? `<button id="toggle-${tabId}-viz" class="px-3 py-2 text-sm rounded-lg btn btn-primary">${showViz ? 'Sembunyikan' : 'Tampilkan'} Visualisasi</button>` : ''}
                 </div>
                 ${hasViz ? `<div id="${tabId}-viz-container" class="${showViz ? '' : 'hidden-dialog'} grid md:grid-cols-2 gap-6 mb-6"></div>` : ''}
-                <div class="overflow-x-auto rounded-lg shadow-md border">${filteredData.length === 0 ? `<p class="text-gray-500 p-4 text-center">Belum ada data.</p>` : `<table class="min-w-full divide-y">
-                        <thead class="bg-gray-50"><tr>${headers.map(h => `<th class="px-6 py-3 text-left text-xs font-medium uppercase">${h}</th>`).join('')}</tr></thead>
-                        <tbody class="bg-white">${rowRenderer(filteredData)}</tbody></table>`}
+                <div class="overflow-x-auto rounded-lg shadow-md border border-[#e9d9b0]">${filteredData.length === 0 ? `<p class="text-gray-500 p-4 text-center">Belum ada data.</p>` : `<table class="min-w-full divide-y divide-[#e9d9b0]">
+                        <thead class="bg-[#eaf1ed]"><tr>${headers.map(h => `<th class="px-6 py-3 text-left text-xs font-semibold text-[#154887] uppercase tracking-wider">${h}</th>`).join('')}</tr></thead>
+                        <tbody class="bg-white divide-y divide-[#e9d9b0]">${rowRenderer(filteredData)}</tbody></table>`}
                 </div>`;
             if (showViz) {
                 if (tabId === 'komplain') renderComplaintsCharts(filteredData);
@@ -297,39 +365,53 @@
         };
 
         const renderAllTabs = () => {
-            // Complaint Tab
             renderDisplayTab('komplain', 'Daftar Komplain', allComplaints, complaintPeriodFilter, complaintBranchFilter, 
-                ['Cabang', 'Judul', 'Status', 'Selesai', 'Aksi'], 
-                (data) => data.map(c => `<tr data-id="${c.id}"><td class="px-6 py-4">${c.branch}</td><td class="px-6 py-4">${c.title}</td><td class="px-6 py-4 font-semibold ${c.status === 'Selesai' ? 'text-green-600' : 'text-blue-600'}">${c.status}</td><td class="px-6 py-4">${c.completionDate||'-'}</td><td class="px-6 py-4"><div class="flex gap-2"><button class="status-update-btn text-indigo-600" data-type="complaint" data-status="${c.status}">Ubah</button><button class="delete-btn text-red-600" data-type="complaint">Hapus</button></div></td></tr>`).join(''), true);
+                ['Cabang', 'Periode', 'Judul', 'Deskripsi', 'Penanganan', 'Status', 'Tgl Selesai', 'Aksi'], 
+                (data) => data.map(c => `
+                    <tr data-id="${c.id}" class="hover:bg-[#eaf1ed] transition-colors duration-200">
+                        <td class="px-6 py-4">${c.branch}</td>
+                        <td class="px-6 py-4">${c.reportingPeriod}</td>
+                        <td class="px-6 py-4 font-semibold">${c.title}</td>
+                        <td class="px-6 py-4 max-w-xs truncate" title="${c.description}">${c.description}</td>
+                        <td class="px-6 py-4 max-w-xs truncate" title="${c.handling || ''}">${c.handling || '-'}</td>
+                        <td class="px-6 py-4 font-semibold ${c.status === 'Selesai' ? 'text-green-600' : 'text-[#32629d]'}">${c.status}</td>
+                        <td class="px-6 py-4">${c.completionDate || '-'}</td>
+                        <td class="px-6 py-4">
+                            <div class="flex gap-2">
+                                <button class="status-update-btn text-[#154887] hover:text-[#32629d] font-semibold" data-type="complaint" data-status="${c.status}">Ubah</button>
+                                <button class="delete-btn text-[#ee2228] hover:text-[#c0171d] font-semibold" data-type="complaint">Hapus</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join(''), true);
             
-            // SLA Tab - NEW DETAILED TABLE
             const getStatusDisplay = (serviceData) => {
-                if (!serviceData || serviceData.totalLayanan === 0) return '<span class="text-gray-400">-</span>';
-                if (serviceData.jumlahTidakSesuai === 0) return '<span class="text-green-600 font-semibold">Sesuai SLA</span>';
-                return `<span class="font-semibold ${serviceData.status === 'Selesai' ? 'text-green-600' : 'text-blue-600'}">${serviceData.status || 'Dalam Proses'}</span>`;
+                if (!serviceData || serviceData.jumlahTidakSesuai === null || serviceData.jumlahTidakSesuai === undefined) return '<span class="text-gray-400">-</span>';
+                if (Number(serviceData.jumlahTidakSesuai) === 0) return '<span class="text-green-600 font-semibold">Sesuai SLA</span>';
+                return `<span class="font-semibold ${serviceData.status === 'Selesai' ? 'text-green-600' : 'text-[#32629d]'}">${serviceData.status || 'Dalam Proses'}</span>`;
             };
             renderDisplayTab('sla', 'Catatan SLA', allSlaRecords, slaPeriodFilter, slaBranchFilter, 
                 ['Cabang', 'Periode', 'Layanan', 'Total', 'Sesuai', 'Tdk Sesuai', 'Penyebab', 'Penanganan', 'Status', 'Aksi'],
                 (data) => data.map(s => `
-                    <tr data-id="${s.id}" class="border-t">
+                    <tr data-id="${s.id}">
                         <td class="px-6 py-4 align-top" rowspan="2">${s.branch}</td>
                         <td class="px-6 py-4 align-top" rowspan="2">${s.reportingPeriod}</td>
-                        <td class="px-6 py-4 font-bold bg-gray-50">On Clinic</td>
-                        <td class="px-6 py-4 bg-gray-50">${s.onClinic.totalLayanan}</td>
-                        <td class="px-6 py-4 bg-gray-50">${s.onClinic.jumlahSesuai}</td>
-                        <td class="px-6 py-4 bg-gray-50">${s.onClinic.jumlahTidakSesuai}</td>
-                        <td class="px-6 py-4 bg-gray-50 max-w-xs truncate" title="${s.onClinic.penyebab || ''}">${s.onClinic.penyebab || '-'}</td>
-                        <td class="px-6 py-4 bg-gray-50 max-w-xs truncate" title="${s.onClinic.penanganan || ''}">${s.onClinic.penanganan || '-'}</td>
-                        <td class="px-6 py-4 bg-gray-50">${getStatusDisplay(s.onClinic)}</td>
+                        <td class="px-6 py-4 font-bold bg-[#eaf1ed]">On Clinic</td>
+                        <td class="px-6 py-4 bg-[#eaf1ed]">${s.onClinic.totalLayanan}</td>
+                        <td class="px-6 py-4 bg-[#eaf1ed]">${s.onClinic.jumlahSesuai}</td>
+                        <td class="px-6 py-4 bg-[#eaf1ed]">${s.onClinic.jumlahTidakSesuai}</td>
+                        <td class="px-6 py-4 bg-[#eaf1ed] max-w-xs truncate" title="${s.onClinic.penyebab || ''}">${s.onClinic.penyebab || '-'}</td>
+                        <td class="px-6 py-4 bg-[#eaf1ed] max-w-xs truncate" title="${s.onClinic.penanganan || ''}">${s.onClinic.penanganan || '-'}</td>
+                        <td class="px-6 py-4 bg-[#eaf1ed]">${getStatusDisplay(s.onClinic)}</td>
                         <td class="px-6 py-4 align-top" rowspan="2">
                             <div class="flex flex-col gap-2">
-                                <button class="status-update-btn text-blue-600 text-left disabled:text-gray-400 disabled:cursor-not-allowed" data-type="sla" data-subservice="onClinic" data-status="${s.onClinic.status}" ${s.onClinic.jumlahTidakSesuai === 0 ? 'disabled' : ''}>Ubah On Clinic</button>
-                                <button class="status-update-btn text-blue-600 text-left disabled:text-gray-400 disabled:cursor-not-allowed" data-type="sla" data-subservice="onSite" data-status="${s.onSite.status}" ${s.onSite.jumlahTidakSesuai === 0 ? 'disabled' : ''}>Ubah On Site</button>
-                                <button class="delete-btn text-red-600 text-left mt-1" data-type="sla">Hapus Data</button>
+                                <button class="status-update-btn text-[#154887] hover:text-[#32629d] text-left font-semibold disabled:text-gray-400 disabled:cursor-not-allowed" data-type="sla" data-subservice="onClinic" data-status="${s.onClinic.status}" ${s.onClinic.jumlahTidakSesuai === 0 ? 'disabled' : ''}>Ubah On Clinic</button>
+                                <button class="status-update-btn text-[#154887] hover:text-[#32629d] text-left font-semibold disabled:text-gray-400 disabled:cursor-not-allowed" data-type="sla" data-subservice="onSite" data-status="${s.onSite.status}" ${s.onSite.jumlahTidakSesuai === 0 ? 'disabled' : ''}>Ubah On Site</button>
+                                <button class="delete-btn text-[#ee2228] hover:text-[#c0171d] text-left mt-1 font-semibold" data-type="sla">Hapus Data</button>
                             </div>
                         </td>
                     </tr>
-                    <tr data-id="${s.id}" class="border-b-2 border-gray-200">
+                    <tr data-id="${s.id}" class="border-b-2 border-[#b39058]">
                         <td class="px-6 py-4 font-bold">On Site</td>
                         <td class="px-6 py-4">${s.onSite.totalLayanan}</td>
                         <td class="px-6 py-4">${s.onSite.jumlahSesuai}</td>
@@ -340,22 +422,36 @@
                     </tr>
                 `).join(''), true);
 
-            // Issue Tab
             renderDisplayTab('isu', 'Isu & Dukungan', allIssues, issuePeriodFilter, issueBranchFilter, 
-                ['Cabang', 'Deskripsi', 'Status', 'Selesai', 'Aksi'], 
-                (data) => data.map(i => `<tr data-id="${i.id}"><td class="px-6 py-4">${i.branch}</td><td class="px-6 py-4 max-w-xs truncate" title="${i.issueDescription}">${i.issueDescription}</td><td class="px-6 py-4 font-semibold ${i.status === 'Selesai' ? 'text-green-600' : 'text-blue-600'}">${i.status}</td><td class="px-6 py-4">${i.completionDate||'-'}</td><td class="px-6 py-4"><div class="flex gap-2"><button class="status-update-btn text-indigo-600" data-type="issue" data-status="${i.status}">Ubah</button><button class="delete-btn text-red-600" data-type="issue">Hapus</button></div></td></tr>`).join(''), true);
+                ['Cabang', 'Periode', 'Deskripsi Isu', 'Dukungan', 'Status', 'Tgl Selesai', 'Aksi'], 
+                (data) => data.map(i => `
+                    <tr data-id="${i.id}" class="hover:bg-[#eaf1ed] transition-colors duration-200">
+                        <td class="px-6 py-4">${i.branch}</td>
+                        <td class="px-6 py-4">${i.reportingPeriod}</td>
+                        <td class="px-6 py-4 max-w-xs truncate" title="${i.issueDescription}">${i.issueDescription}</td>
+                        <td class="px-6 py-4 max-w-xs truncate" title="${i.supportRequest}">${i.supportRequest}</td>
+                        <td class="px-6 py-4 font-semibold ${i.status === 'Selesai' ? 'text-green-600' : 'text-[#32629d]'}">${i.status}</td>
+                        <td class="px-6 py-4">${i.completionDate || '-'}</td>
+                        <td class="px-6 py-4">
+                            <div class="flex gap-2">
+                                <button class="status-update-btn text-[#154887] hover:text-[#32629d] font-semibold" data-type="issue" data-status="${i.status}">Ubah</button>
+                                <button class="delete-btn text-[#ee2228] hover:text-[#c0171d] font-semibold" data-type="issue">Hapus</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join(''), true);
             
-            // Info Tab
             renderDisplayTab('infoTambahan', 'Info Tambahan', allInfoTambahan, infoTambahanPeriodFilter, infoTambahanBranchFilter, 
                 ['Cabang', 'Info', 'Aksi'], 
-                (data) => data.map(info => `<tr data-id="${info.id}"><td class="px-6 py-4">${info.branch}</td><td class="px-6 py-4 whitespace-pre-wrap">${info.info}</td><td class="px-6 py-4"><button class="delete-btn text-red-600" data-type="infoTambahan">Hapus</button></td></tr>`).join(''));
+                (data) => data.map(info => `<tr data-id="${info.id}" class="hover:bg-[#eaf1ed] transition-colors duration-200"><td class="px-6 py-4">${info.branch}</td><td class="px-6 py-4 whitespace-pre-wrap">${info.info}</td><td class="px-6 py-4"><button class="delete-btn text-[#ee2228] hover:text-[#c0171d] font-semibold" data-type="infoTambahan">Hapus</button></td></tr>`).join(''));
         };
 
         const destroyChart = (chart) => chart && chart.destroy();
         const renderChart = (ctx, type, data, options = {}) => new Chart(ctx, { type, data, options });
         const renderViz = (containerId, charts) => {
             const container = document.getElementById(containerId);
-            container.innerHTML = charts.map(c => `<div class="bg-gray-50 p-4 rounded-lg border"><h3 class="text-xl font-semibold text-center mb-3">${c.title}</h3><div class="chart-container"><canvas id="${c.id}"></canvas></div></div>`).join('');
+            if (!container) return;
+            container.innerHTML = charts.map(c => `<div class="bg-[#fefdfc] p-4 rounded-lg border border-[#e9d9b0]"><h3 class="text-xl font-semibold text-center mb-3 text-[#154887]">${c.title}</h3><div class="chart-container"><canvas id="${c.id}"></canvas></div></div>`).join('');
             charts.forEach(c => c.renderer());
         };
         const renderComplaintsCharts = (data) => {
@@ -370,7 +466,7 @@
         const renderSlaCharts = (data) => {
             destroyChart(slaComplianceChart); destroyChart(slaStatusChart); destroyChart(slaBranchChart);
             const vizContainer = document.getElementById('sla-viz-container');
-            if (data.length === 0) { vizContainer.innerHTML = '<p class="text-center text-gray-500">Tidak ada data visualisasi.</p>'; return; }
+            if (!vizContainer || data.length === 0) { if(vizContainer) vizContainer.innerHTML = '<p class="text-center text-gray-500">Tidak ada data visualisasi.</p>'; return; }
             let totalCompliant = 0, totalNonCompliant = 0;
             const statusCounts = { 'Dalam Proses': 0, 'Selesai': 0 };
             const branchData = branches.reduce((acc, b) => (acc[b] = { compliant: 0, nonCompliant: 0 }, acc), {});
@@ -387,10 +483,10 @@
             });
             const totalServices = totalCompliant + totalNonCompliant;
             const complianceRatio = totalServices > 0 ? ((totalCompliant / totalServices) * 100).toFixed(2) : 0;
-            vizContainer.innerHTML = `<h3 class="text-xl font-semibold mb-3">Ringkasan SLA</h3><div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-center"><div><p>Total Layanan</p><p class="text-2xl font-bold">${totalServices}</p></div><div><p class="text-green-600">Sesuai SLA</p><p class="text-2xl font-bold">${totalCompliant}</p></div><div><p class="text-red-600">Tidak Sesuai</p><p class="text-2xl font-bold">${totalNonCompliant}</p></div><div><p class="text-indigo-800">Kepatuhan</p><p class="text-2xl font-bold">${complianceRatio}%</p></div></div><div class="grid grid-cols-1 lg:grid-cols-2 gap-6"><div class="bg-white p-4 rounded-lg border"><h4 class="text-lg font-semibold text-center mb-3">Rasio Kepatuhan</h4><div class="chart-container"><canvas id="sla-compliance-chart"></canvas></div></div><div class="bg-white p-4 rounded-lg border"><h4 class="text-lg font-semibold text-center mb-3">Status Penanganan</h4><div class="chart-container"><canvas id="sla-status-chart"></canvas></div></div><div class="lg:col-span-2 bg-white p-4 rounded-lg border"><h4 class="text-lg font-semibold text-center mb-3">Kinerja per Cabang</h4><div class="chart-container" style="min-height: 300px;"><canvas id="sla-branch-chart"></canvas></div></div></div>`;
-            slaComplianceChart = renderChart(document.getElementById('sla-compliance-chart').getContext('2d'), 'doughnut', { labels: ['Sesuai', 'Tdk Sesuai'], datasets: [{ data: [totalCompliant, totalNonCompliant], backgroundColor: ['#82ca9d', '#FF8042'] }] }, { responsive: true, maintainAspectRatio: false });
+            vizContainer.innerHTML = `<h3 class="text-xl font-semibold mb-3 text-[#154887]">Ringkasan SLA</h3><div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-center"><div><p>Total Layanan</p><p class="text-2xl font-bold">${totalServices}</p></div><div><p class="text-green-600">Sesuai SLA</p><p class="text-2xl font-bold">${totalCompliant}</p></div><div><p class="text-red-600">Tidak Sesuai</p><p class="text-2xl font-bold">${totalNonCompliant}</p></div><div><p class="text-[#154887]">Kepatuhan</p><p class="text-2xl font-bold">${complianceRatio}%</p></div></div><div class="grid grid-cols-1 lg:grid-cols-2 gap-6"><div class="bg-white p-4 rounded-lg border border-[#e9d9b0]"><h4 class="text-lg font-semibold text-center mb-3 text-[#154887]">Rasio Kepatuhan</h4><div class="chart-container"><canvas id="sla-compliance-chart"></canvas></div></div><div class="bg-white p-4 rounded-lg border border-[#e9d9b0]"><h4 class="text-lg font-semibold text-center mb-3 text-[#154887]">Status Penanganan</h4><div class="chart-container"><canvas id="sla-status-chart"></canvas></div></div><div class="lg:col-span-2 bg-white p-4 rounded-lg border border-[#e9d9b0]"><h4 class="text-lg font-semibold text-center mb-3 text-[#154887]">Kinerja per Cabang</h4><div class="chart-container" style="min-height: 300px;"><canvas id="sla-branch-chart"></canvas></div></div></div>`;
+            slaComplianceChart = renderChart(document.getElementById('sla-compliance-chart').getContext('2d'), 'doughnut', { labels: ['Sesuai', 'Tdk Sesuai'], datasets: [{ data: [totalCompliant, totalNonCompliant], backgroundColor: ['#82ca9d', '#ee2228'] }] }, { responsive: true, maintainAspectRatio: false });
             slaStatusChart = renderChart(document.getElementById('sla-status-chart').getContext('2d'), 'pie', { labels: Object.keys(statusCounts), datasets: [{ data: Object.values(statusCounts), backgroundColor: chartColors }] }, { responsive: true, maintainAspectRatio: false });
-            slaBranchChart = renderChart(document.getElementById('sla-branch-chart').getContext('2d'), 'bar', { labels: Object.keys(branchData), datasets: [{ label: 'Sesuai', data: Object.values(branchData).map(b => b.compliant), backgroundColor: '#82ca9d' }, { label: 'Tdk Sesuai', data: Object.values(branchData).map(b => b.nonCompliant), backgroundColor: '#FF8042' }] }, { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } });
+            slaBranchChart = renderChart(document.getElementById('sla-branch-chart').getContext('2d'), 'bar', { labels: Object.keys(branchData), datasets: [{ label: 'Sesuai', data: Object.values(branchData).map(b => b.compliant), backgroundColor: '#82ca9d' }, { label: 'Tdk Sesuai', data: Object.values(branchData).map(b => b.nonCompliant), backgroundColor: '#ee2228' }] }, { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } });
         };
         const renderIssuesCharts = (data) => {
             destroyChart(issuesStatusChart); destroyChart(issuesBranchChart); if (!data.length) return;
@@ -601,6 +697,35 @@
             });
         };
         
+        const switchView = (view) => {
+            currentView = view;
+            const inputColumn = document.getElementById('input-column');
+            const displayColumn = document.getElementById('display-column');
+            const viewInputBtn = document.getElementById('view-input-btn');
+            const viewDashboardBtn = document.getElementById('view-dashboard-btn');
+
+            if (view === 'input') {
+                inputColumn.classList.remove('hidden');
+                displayColumn.classList.remove('lg:col-span-3');
+                displayColumn.classList.add('lg:col-span-2');
+
+                viewInputBtn.classList.add('bg-[#154887]', 'text-[#fefdfc]');
+                viewInputBtn.classList.remove('text-[#154887]', 'hover:bg-[#e9d9b0]');
+                viewDashboardBtn.classList.remove('bg-[#154887]', 'text-[#fefdfc]');
+                viewDashboardBtn.classList.add('text-[#154887]', 'hover:bg-[#e9d9b0]');
+            } else { // 'dashboard' view
+                inputColumn.classList.add('hidden');
+                displayColumn.classList.remove('lg:col-span-2');
+                displayColumn.classList.add('lg:col-span-3');
+
+                viewDashboardBtn.classList.add('bg-[#154887]', 'text-[#fefdfc]');
+                viewDashboardBtn.classList.remove('text-[#154887]', 'hover:bg-[#e9d9b0]');
+                viewInputBtn.classList.remove('bg-[#154887]', 'text-[#fefdfc]');
+                viewInputBtn.classList.add('text-[#154887]', 'hover:bg-[#e9d9b0]');
+            }
+            renderAllTabs(); // Re-render to resize charts
+        };
+        
         const init = async () => {
             const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "AIzaSyCRNTafMklQKHd4M25nAcs-ZLTK0UxvuGE", authDomain: "myreport-9e7e6.firebaseapp.com", projectId: "myreport-9e7e6" };
             if (!firebaseConfig.apiKey) { errorMessage.textContent = "Konfigurasi Firebase tidak valid."; showDialog(errorDisplay); return; }
@@ -650,16 +775,19 @@
                 if (e.target.matches('.tab-btn')) {
                     activeTab = e.target.dataset.tab;
                     document.querySelectorAll('.tab-btn').forEach(btn => {
-                        btn.classList.toggle('bg-indigo-600', btn === e.target);
-                        btn.classList.toggle('text-white', btn === e.target);
-                        btn.classList.toggle('text-indigo-700', btn !== e.target);
-                        btn.classList.toggle('hover:bg-indigo-100', btn !== e.target);
+                        btn.classList.toggle('bg-[#154887]', btn === e.target);
+                        btn.classList.toggle('text-[#fefdfc]', btn === e.target);
+                        btn.classList.toggle('shadow-md', btn === e.target);
+                        btn.classList.toggle('text-[#154887]', btn !== e.target);
+                        btn.classList.toggle('hover:bg-[#e9d9b0]', btn !== e.target);
                     });
                     document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden-dialog'));
                     document.getElementById(`form-${activeTab}`).classList.remove('hidden-dialog');
                     document.getElementById(`display-${activeTab}`).classList.remove('hidden-dialog');
                 }
             };
+            document.getElementById('view-input-btn').onclick = () => switchView('input');
+            document.getElementById('view-dashboard-btn').onclick = () => switchView('dashboard');
             messageDialogOkBtn.onclick = () => hideDialog(messageDialog);
             confirmationDialogCancelBtn.onclick = () => hideDialog(confirmationDialog);
             statusUpdateCancelBtn.onclick = () => hideDialog(statusUpdateDialog);
@@ -672,4 +800,5 @@
     </script>
 </body>
 </html>
+
 
