@@ -88,6 +88,10 @@
         .btn-neutral:hover {
             background-color: #d0ad5f;
         }
+        .data-label {
+            font-weight: 600;
+            color: #154887;
+        }
     </style>
 </head>
 <body class="text-gray-800 p-4 sm:p-6 md:p-8">
@@ -211,6 +215,21 @@
             </div>
         </div>
     </div>
+    <!-- Info Edit Dialog -->
+    <div id="info-edit-dialog" class="hidden-dialog fixed inset-0 z-50">
+        <div class="dialog-backdrop absolute inset-0 bg-gray-900 bg-opacity-60"></div>
+        <div class="dialog-content relative bg-[#fefdfc] rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+            <h3 class="text-xl font-semibold text-[#154887] mb-4">Edit Info Tambahan</h3>
+            <div class="mb-4">
+                <label for="info-edit-field" class="block text-sm font-medium text-gray-700 mb-1">Info</label>
+                <textarea id="info-edit-field" rows="8" class="w-full p-2 border border-[#d0ad5f] rounded-md focus:ring-2 focus:ring-[#b68103] focus:border-[#b68103]"></textarea>
+            </div>
+            <div class="flex justify-end gap-3">
+                <button id="info-edit-cancel-btn" class="px-4 py-2 rounded-lg btn btn-neutral">Batal</button>
+                <button id="info-edit-confirm-btn" class="px-4 py-2 rounded-lg btn btn-primary">Simpan Perubahan</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Firebase SDKs and Application Logic -->
     <script type="module">
@@ -257,6 +276,10 @@
         const statusUpdateCompletionDate = document.getElementById('status-update-completion-date');
         const statusUpdateCancelBtn = document.getElementById('status-update-cancel-btn');
         let statusUpdateConfirmBtn = document.getElementById('status-update-confirm-btn');
+        const infoEditDialog = document.getElementById('info-edit-dialog');
+        const infoEditField = document.getElementById('info-edit-field');
+        const infoEditCancelBtn = document.getElementById('info-edit-cancel-btn');
+        let infoEditConfirmBtn = document.getElementById('info-edit-confirm-btn');
 
         const formatDate = (date) => new Date(date).toISOString().split('T')[0];
         const getReportingPeriodDetails = (date = new Date()) => {
@@ -353,9 +376,9 @@
                     ${hasViz ? `<button id="toggle-${tabId}-viz" class="px-3 py-2 text-sm rounded-lg btn btn-primary">${showViz ? 'Sembunyikan' : 'Tampilkan'} Visualisasi</button>` : ''}
                 </div>
                 ${hasViz ? `<div id="${tabId}-viz-container" class="${showViz ? '' : 'hidden-dialog'} grid md:grid-cols-2 gap-6 mb-6"></div>` : ''}
-                <div class="overflow-x-auto rounded-lg shadow-md border border-[#e9d9b0]">${filteredData.length === 0 ? `<p class="text-gray-500 p-4 text-center">Belum ada data.</p>` : `<table class="min-w-full divide-y divide-[#e9d9b0]">
+                <div class="overflow-x-auto rounded-lg shadow-md border border-[#e9d9b0]">${filteredData.length === 0 ? `<p class="text-gray-500 p-4 text-center">Belum ada data.</p>` : `<table class="min-w-full">
                         <thead class="bg-[#eaf1ed]"><tr>${headers.map(h => `<th class="px-6 py-3 text-left text-xs font-semibold text-[#154887] uppercase tracking-wider">${h}</th>`).join('')}</tr></thead>
-                        <tbody class="bg-white divide-y divide-[#e9d9b0]">${rowRenderer(filteredData)}</tbody></table>`}
+                        ${rowRenderer(filteredData)}</table>`}
                 </div>`;
             if (showViz) {
                 if (tabId === 'komplain') renderComplaintsCharts(filteredData);
@@ -366,23 +389,33 @@
 
         const renderAllTabs = () => {
             renderDisplayTab('komplain', 'Daftar Komplain', allComplaints, complaintPeriodFilter, complaintBranchFilter, 
-                ['Cabang', 'Periode', 'Judul', 'Deskripsi', 'Penanganan', 'Status', 'Tgl Selesai', 'Aksi'], 
+                ['Detail Komplain', 'Status', 'Aksi'], 
                 (data) => data.map(c => `
-                    <tr data-id="${c.id}" class="hover:bg-[#eaf1ed] transition-colors duration-200">
-                        <td class="px-6 py-4">${c.branch}</td>
-                        <td class="px-6 py-4">${c.reportingPeriod}</td>
-                        <td class="px-6 py-4 font-semibold">${c.title}</td>
-                        <td class="px-6 py-4 max-w-xs truncate" title="${c.description}">${c.description}</td>
-                        <td class="px-6 py-4 max-w-xs truncate" title="${c.handling || ''}">${c.handling || '-'}</td>
-                        <td class="px-6 py-4 font-semibold ${c.status === 'Selesai' ? 'text-green-600' : 'text-[#32629d]'}">${c.status}</td>
-                        <td class="px-6 py-4">${c.completionDate || '-'}</td>
-                        <td class="px-6 py-4">
-                            <div class="flex gap-2">
-                                <button class="status-update-btn text-[#154887] hover:text-[#32629d] font-semibold" data-type="complaint" data-status="${c.status}">Ubah</button>
-                                <button class="delete-btn text-[#ee2228] hover:text-[#c0171d] font-semibold" data-type="complaint">Hapus</button>
-                            </div>
-                        </td>
-                    </tr>
+                    <tbody class="border-t-4 border-b-4 border-[#b39058]">
+                        <tr class="bg-white">
+                            <td class="px-6 py-4 align-top">
+                                <div class="text-sm"><span class="data-label">Cabang:</span> ${c.branch}</div>
+                                <div class="text-sm"><span class="data-label">Periode:</span> ${c.reportingPeriod}</div>
+                                <div class="text-sm font-semibold text-black mt-2">${c.title}</div>
+                            </td>
+                            <td class="px-6 py-4 align-top">
+                                <div class="font-semibold ${c.status === 'Selesai' ? 'text-green-600' : 'text-[#32629d]'}">${c.status}</div>
+                                ${c.completionDate ? `<div class="text-xs text-gray-500">Selesai: ${c.completionDate}</div>` : ''}
+                            </td>
+                            <td class="px-6 py-4 align-top">
+                                <div class="flex gap-4">
+                                    <button class="status-update-btn text-[#154887] hover:text-[#32629d] font-semibold" data-type="complaint" data-id="${c.id}" data-status="${c.status}">Ubah</button>
+                                    <button class="delete-btn text-[#ee2228] hover:text-[#c0171d] font-semibold" data-type="complaint" data-id="${c.id}">Hapus</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="bg-gray-50">
+                            <td class="px-6 py-4" colspan="3">
+                                <div class="text-sm mb-2"><span class="data-label">Deskripsi:</span> <div class="whitespace-pre-wrap pl-2">${c.description}</div></div>
+                                <div class="text-sm"><span class="data-label">Penanganan:</span> <div class="whitespace-pre-wrap pl-2">${c.handling || '-'}</div></div>
+                            </td>
+                        </tr>
+                    </tbody>
                 `).join(''), true);
             
             const getStatusDisplay = (serviceData) => {
@@ -391,59 +424,86 @@
                 return `<span class="font-semibold ${serviceData.status === 'Selesai' ? 'text-green-600' : 'text-[#32629d]'}">${serviceData.status || 'Dalam Proses'}</span>`;
             };
             renderDisplayTab('sla', 'Catatan SLA', allSlaRecords, slaPeriodFilter, slaBranchFilter, 
-                ['Cabang', 'Periode', 'Layanan', 'Total', 'Sesuai', 'Tdk Sesuai', 'Penyebab', 'Penanganan', 'Status', 'Aksi'],
+                ['Detail Cabang & Periode', 'Detail Layanan', 'Aksi'],
                 (data) => data.map(s => `
-                    <tr data-id="${s.id}">
-                        <td class="px-6 py-4 align-top" rowspan="2">${s.branch}</td>
-                        <td class="px-6 py-4 align-top" rowspan="2">${s.reportingPeriod}</td>
-                        <td class="px-6 py-4 font-bold bg-[#eaf1ed]">On Clinic</td>
-                        <td class="px-6 py-4 bg-[#eaf1ed]">${s.onClinic.totalLayanan}</td>
-                        <td class="px-6 py-4 bg-[#eaf1ed]">${s.onClinic.jumlahSesuai}</td>
-                        <td class="px-6 py-4 bg-[#eaf1ed]">${s.onClinic.jumlahTidakSesuai}</td>
-                        <td class="px-6 py-4 bg-[#eaf1ed] max-w-xs truncate" title="${s.onClinic.penyebab || ''}">${s.onClinic.penyebab || '-'}</td>
-                        <td class="px-6 py-4 bg-[#eaf1ed] max-w-xs truncate" title="${s.onClinic.penanganan || ''}">${s.onClinic.penanganan || '-'}</td>
-                        <td class="px-6 py-4 bg-[#eaf1ed]">${getStatusDisplay(s.onClinic)}</td>
-                        <td class="px-6 py-4 align-top" rowspan="2">
-                            <div class="flex flex-col gap-2">
-                                <button class="status-update-btn text-[#154887] hover:text-[#32629d] text-left font-semibold disabled:text-gray-400 disabled:cursor-not-allowed" data-type="sla" data-subservice="onClinic" data-status="${s.onClinic.status}" ${s.onClinic.jumlahTidakSesuai === 0 ? 'disabled' : ''}>Ubah On Clinic</button>
-                                <button class="status-update-btn text-[#154887] hover:text-[#32629d] text-left font-semibold disabled:text-gray-400 disabled:cursor-not-allowed" data-type="sla" data-subservice="onSite" data-status="${s.onSite.status}" ${s.onSite.jumlahTidakSesuai === 0 ? 'disabled' : ''}>Ubah On Site</button>
-                                <button class="delete-btn text-[#ee2228] hover:text-[#c0171d] text-left mt-1 font-semibold" data-type="sla">Hapus Data</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr data-id="${s.id}" class="border-b-2 border-[#b39058]">
-                        <td class="px-6 py-4 font-bold">On Site</td>
-                        <td class="px-6 py-4">${s.onSite.totalLayanan}</td>
-                        <td class="px-6 py-4">${s.onSite.jumlahSesuai}</td>
-                        <td class="px-6 py-4">${s.onSite.jumlahTidakSesuai}</td>
-                        <td class="px-6 py-4 max-w-xs truncate" title="${s.onSite.penyebab || ''}">${s.onSite.penyebab || '-'}</td>
-                        <td class="px-6 py-4 max-w-xs truncate" title="${s.onSite.penanganan || ''}">${s.onSite.penanganan || '-'}</td>
-                        <td class="px-6 py-4">${getStatusDisplay(s.onSite)}</td>
-                    </tr>
+                    <tbody data-id="${s.id}" class="border-t-4 border-b-4 border-[#b39058]">
+                        <tr class="bg-white">
+                           <td class="px-6 py-4 align-top" rowspan="2">
+                                <div class="text-sm"><span class="data-label">Cabang:</span> ${s.branch}</div>
+                                <div class="text-sm"><span class="data-label">Periode:</span> ${s.reportingPeriod}</div>
+                           </td>
+                           <td class="px-6 py-4 border-b border-[#e9d9b0]">
+                                <div class="data-label mb-1">On Clinic</div>
+                                <div class="text-sm">Total: ${s.onClinic.totalLayanan} | Sesuai: ${s.onClinic.jumlahSesuai} | Tdk Sesuai: ${s.onClinic.jumlahTidakSesuai}</div>
+                                <div class="text-sm mt-1"><span class="font-semibold">Status:</span> ${getStatusDisplay(s.onClinic)}</div>
+                                <div class="text-xs text-gray-600 mt-2"><span class="font-semibold">Penyebab:</span> ${s.onClinic.penyebab || '-'}</div>
+                                <div class="text-xs text-gray-600"><span class="font-semibold">Penanganan:</span> ${s.onClinic.penanganan || '-'}</div>
+                           </td>
+                           <td class="px-6 py-4 align-middle" rowspan="2">
+                                <div class="flex flex-col gap-2">
+                                    <button class="status-update-btn text-[#154887] hover:text-[#32629d] text-left font-semibold disabled:text-gray-400 disabled:cursor-not-allowed" data-type="sla" data-id="${s.id}" data-subservice="onClinic" data-status="${s.onClinic.status}" ${s.onClinic.jumlahTidakSesuai === 0 ? 'disabled' : ''}>Ubah On Clinic</button>
+                                    <button class="status-update-btn text-[#154887] hover:text-[#32629d] text-left font-semibold disabled:text-gray-400 disabled:cursor-not-allowed" data-type="sla" data-id="${s.id}" data-subservice="onSite" data-status="${s.onSite.status}" ${s.onSite.jumlahTidakSesuai === 0 ? 'disabled' : ''}>Ubah On Site</button>
+                                    <button class="delete-btn text-[#ee2228] hover:text-[#c0171d] text-left mt-1 font-semibold" data-type="sla" data-id="${s.id}">Hapus Data</button>
+                                </div>
+                           </td>
+                        </tr>
+                        <tr class="bg-white">
+                           <td class="px-6 py-4">
+                                <div class="data-label mb-1">On Site</div>
+                                <div class="text-sm">Total: ${s.onSite.totalLayanan} | Sesuai: ${s.onSite.jumlahSesuai} | Tdk Sesuai: ${s.onSite.jumlahTidakSesuai}</div>
+                                <div class="text-sm mt-1"><span class="font-semibold">Status:</span> ${getStatusDisplay(s.onSite)}</div>
+                                <div class="text-xs text-gray-600 mt-2"><span class="font-semibold">Penyebab:</span> ${s.onSite.penyebab || '-'}</div>
+                                <div class="text-xs text-gray-600"><span class="font-semibold">Penanganan:</span> ${s.onSite.penanganan || '-'}</div>
+                           </td>
+                        </tr>
+                    </tbody>
                 `).join(''), true);
 
             renderDisplayTab('isu', 'Isu & Dukungan', allIssues, issuePeriodFilter, issueBranchFilter, 
-                ['Cabang', 'Periode', 'Deskripsi Isu', 'Dukungan', 'Status', 'Tgl Selesai', 'Aksi'], 
+                ['Detail Isu', 'Status', 'Aksi'], 
                 (data) => data.map(i => `
-                    <tr data-id="${i.id}" class="hover:bg-[#eaf1ed] transition-colors duration-200">
-                        <td class="px-6 py-4">${i.branch}</td>
-                        <td class="px-6 py-4">${i.reportingPeriod}</td>
-                        <td class="px-6 py-4 max-w-xs truncate" title="${i.issueDescription}">${i.issueDescription}</td>
-                        <td class="px-6 py-4 max-w-xs truncate" title="${i.supportRequest}">${i.supportRequest}</td>
-                        <td class="px-6 py-4 font-semibold ${i.status === 'Selesai' ? 'text-green-600' : 'text-[#32629d]'}">${i.status}</td>
-                        <td class="px-6 py-4">${i.completionDate || '-'}</td>
-                        <td class="px-6 py-4">
-                            <div class="flex gap-2">
-                                <button class="status-update-btn text-[#154887] hover:text-[#32629d] font-semibold" data-type="issue" data-status="${i.status}">Ubah</button>
-                                <button class="delete-btn text-[#ee2228] hover:text-[#c0171d] font-semibold" data-type="issue">Hapus</button>
-                            </div>
-                        </td>
-                    </tr>
+                    <tbody class="border-t-4 border-b-4 border-[#b39058]">
+                        <tr class="bg-white">
+                            <td class="px-6 py-4 align-top">
+                                <div class="text-sm"><span class="data-label">Cabang:</span> ${i.branch}</div>
+                                <div class="text-sm"><span class="data-label">Periode:</span> ${i.reportingPeriod}</div>
+                            </td>
+                            <td class="px-6 py-4 align-top">
+                                <div class="font-semibold ${i.status === 'Selesai' ? 'text-green-600' : 'text-[#32629d]'}">${i.status}</div>
+                                ${i.completionDate ? `<div class="text-xs text-gray-500">Selesai: ${i.completionDate}</div>` : ''}
+                            </td>
+                            <td class="px-6 py-4 align-top">
+                                <div class="flex gap-4">
+                                    <button class="status-update-btn text-[#154887] hover:text-[#32629d] font-semibold" data-type="issue" data-id="${i.id}" data-status="${i.status}">Ubah</button>
+                                    <button class="delete-btn text-[#ee2228] hover:text-[#c0171d] font-semibold" data-type="issue" data-id="${i.id}">Hapus</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="bg-gray-50">
+                            <td class="px-6 py-4" colspan="3">
+                                <div class="text-sm mb-2"><span class="data-label">Deskripsi Isu:</span> <div class="whitespace-pre-wrap pl-2">${i.issueDescription}</div></div>
+                                <div class="text-sm"><span class="data-label">Permintaan Dukungan:</span> <div class="whitespace-pre-wrap pl-2">${i.supportRequest || '-'}</div></div>
+                            </td>
+                        </tr>
+                    </tbody>
                 `).join(''), true);
             
             renderDisplayTab('infoTambahan', 'Info Tambahan', allInfoTambahan, infoTambahanPeriodFilter, infoTambahanBranchFilter, 
                 ['Cabang', 'Info', 'Aksi'], 
-                (data) => data.map(info => `<tr data-id="${info.id}" class="hover:bg-[#eaf1ed] transition-colors duration-200"><td class="px-6 py-4">${info.branch}</td><td class="px-6 py-4 whitespace-pre-wrap">${info.info}</td><td class="px-6 py-4"><button class="delete-btn text-[#ee2228] hover:text-[#c0171d] font-semibold" data-type="infoTambahan">Hapus</button></td></tr>`).join(''));
+                (data) => data.map(info => `
+                    <tbody data-id="${info.id}" class="border-t border-b">
+                        <tr class="hover:bg-[#eaf1ed] transition-colors duration-200">
+                            <td class="px-6 py-4 w-1/4 align-top">${info.branch}</td>
+                            <td class="px-6 py-4 w-2/4 whitespace-pre-wrap">${info.info}</td>
+                            <td class="px-6 py-4 w-1/4 align-top">
+                                <div class="flex gap-4">
+                                    <button class="edit-btn text-[#154887] hover:text-[#32629d] font-semibold" data-type="infoTambahan" data-id="${info.id}">Edit</button>
+                                    <button class="delete-btn text-[#ee2228] hover:text-[#c0171d] font-semibold" data-type="infoTambahan" data-id="${info.id}">Hapus</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                `).join(''));
         };
 
         const destroyChart = (chart) => chart && chart.destroy();
@@ -564,14 +624,16 @@
                     if (id.includes('isu')) showIssuesViz = !showIssuesViz;
                     renderAllTabs();
                 }
-                const row = btn.closest('tr');
-                if (!row) return;
-                const docId = row.dataset.id;
+                const docId = btn.dataset.id;
                 const type = btn.dataset.type;
                 if (btn.classList.contains('delete-btn')) {
                     showConfirmation(`Anda yakin ingin menghapus item ini?`, () => deleteItem(`${type}s`, docId));
                 } else if (btn.classList.contains('status-update-btn')) {
                     openStatusUpdateDialog(docId, type, btn.dataset.status, btn.dataset.subservice);
+                } else if (btn.classList.contains('edit-btn')) {
+                    if (type === 'infoTambahan') {
+                        openInfoEditDialog(docId);
+                    }
                 }
             };
         };
@@ -593,7 +655,6 @@
             if (!data) return showMessage("Harap lengkapi semua bidang yang wajib diisi.");
             try {
                 data.reportingPeriod = formatReportingPeriod(data.periodStartDate, data.periodEndDate);
-                // UBAH: Menyimpan ke koleksi publik
                 await addDoc(collection(db, `artifacts/${appId}/public/data/${collectionName}`), data);
                 showMessage("Data berhasil ditambahkan!");
                 renderForms();
@@ -613,7 +674,6 @@
 
         const deleteItem = async (collectionName, id) => {
             try { 
-                // UBAH: Menghapus dari koleksi publik
                 await deleteDoc(doc(db, `artifacts/${appId}/public/data/${collectionName}`, id)); 
                 showMessage("Item berhasil dihapus."); 
             }
@@ -644,12 +704,46 @@
                 fieldsToUpdate = { status: newStatus, completionDate };
             }
             try {
-                // UBAH: Memperbarui di koleksi publik
                 await updateDoc(doc(db, `artifacts/${appId}/public/data/${collectionName}`, id), fieldsToUpdate);
                 showMessage("Status berhasil diperbarui.");
             } catch (e) { showMessage(`Gagal memperbarui: ${e.message}`); }
             finally { hideDialog(statusUpdateDialog); }
         };
+
+        const openInfoEditDialog = (docId) => {
+            const infoRecord = allInfoTambahan.find(info => info.id === docId);
+            if (!infoRecord) {
+                showMessage("Info tidak ditemukan.");
+                return;
+            }
+            infoEditField.value = infoRecord.info;
+            
+            const newBtn = infoEditConfirmBtn.cloneNode(true);
+            infoEditConfirmBtn.parentNode.replaceChild(newBtn, infoEditConfirmBtn);
+            infoEditConfirmBtn = newBtn;
+            infoEditConfirmBtn.onclick = () => handleInfoUpdate(docId);
+            
+            showDialog(infoEditDialog);
+        };
+        
+        const handleInfoUpdate = async (docId) => {
+            const newInfo = infoEditField.value;
+            if (!newInfo) {
+                showMessage("Info tidak boleh kosong.");
+                return;
+            }
+            try {
+                await updateDoc(doc(db, `artifacts/${appId}/public/data/infoTambahans`, docId), {
+                    info: newInfo
+                });
+                showMessage("Info berhasil diperbarui.");
+            } catch (e) {
+                showMessage(`Gagal memperbarui info: ${e.message}`);
+            } finally {
+                hideDialog(infoEditDialog);
+            }
+        };
+
         const handleExportAllToExcel = () => {
             const dataSets = {
                 Komplain: { data: allComplaints, filter: complaintPeriodFilter, branchFilter: complaintBranchFilter, headers: ['Cabang', 'Periode', 'Judul', 'Deskripsi', 'Penanganan', 'Status', 'Tgl Selesai'], renderer: c => `<td>${c.branch||''}</td><td>${c.reportingPeriod||''}</td><td>${c.title||''}</td><td>${c.description||''}</td><td>${c.handling||''}</td><td>${c.status||''}</td><td>${c.completionDate||''}</td>`},
@@ -686,7 +780,6 @@
                 infoTambahan: (data) => allInfoTambahan = data,
             };
             for (const name in collections) {
-                // UBAH: Mengambil data dari koleksi publik
                 const q = query(collection(db, `artifacts/${appId}/public/data/${name}`));
                 const unsub = onSnapshot(q, (snapshot) => {
                     collections[name](snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
@@ -748,12 +841,13 @@
 
             // --- ▼▼▼ DAFTAR EMAIL YANG DIIZINKAN BISA DIAKSES DI SINI ▼▼▼ ---
             const authorizedEmails = [
-                "tmcsemarang1@gmail.com",
+                "muhherman226@gmail.com",
                 "dr.dwikartikasarimmr@gmail.com",
                 "ekonovidianto7@gmail.com",
                 "fati.imahss@gmail.com",
                 "kadeklestary@gmail.com",
-                "pekaktemplar@gmail.com"
+                "pekaktemplar@gmail.com",
+                "tmcsemarang1@gmail.com"
                 // Tambahkan alamat email lain di sini jika perlu
             ];
              // --- ▲▲▲ AKHIR DARI DAFTAR EMAIL ▲▲▲ ---
@@ -837,6 +931,7 @@
             messageDialogOkBtn.onclick = () => hideDialog(messageDialog);
             confirmationDialogCancelBtn.onclick = () => hideDialog(confirmationDialog);
             statusUpdateCancelBtn.onclick = () => hideDialog(statusUpdateDialog);
+            infoEditCancelBtn.onclick = () => hideDialog(infoEditDialog);
             signOutBtn.onclick = () => signOut(auth);
             googleSignInBtn.onclick = handleGoogleSignIn;
             document.getElementById('export-excel-btn').onclick = handleExportAllToExcel;
@@ -846,9 +941,4 @@
     </script>
 </body>
 </html>
-
-
-
-
-
 
