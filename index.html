@@ -603,17 +603,17 @@
                 const target = e.target;
                 if (target.id.endsWith('PeriodFilter')) {
                     const tabId = target.id.replace('PeriodFilter', '');
-                    if (tabId === 'comp') complaintPeriodFilter = target.value;
+                    if (tabId === 'komplain') complaintPeriodFilter = target.value;
                     if (tabId === 'sla') slaPeriodFilter = target.value;
-                    if (tabId === 'issue') issuePeriodFilter = target.value;
+                    if (tabId === 'isu') issuePeriodFilter = target.value;
                     if (tabId === 'infoTambahan') infoTambahanPeriodFilter = target.value;
                     renderAllTabs();
                 }
                 if (target.id.endsWith('BranchFilter')) {
                     const tabId = target.id.replace('BranchFilter', '');
-                    if (tabId === 'comp') complaintBranchFilter = target.value;
+                    if (tabId === 'komplain') complaintBranchFilter = target.value;
                     if (tabId === 'sla') slaBranchFilter = target.value;
-                    if (tabId === 'issue') issueBranchFilter = target.value;
+                    if (tabId === 'isu') issueBranchFilter = target.value;
                     if (tabId === 'infoTambahan') infoTambahanBranchFilter = target.value;
                     renderAllTabs();
                 }
